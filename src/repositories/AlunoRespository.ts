@@ -35,6 +35,16 @@ class AlunoRepository{
 
         return idAluno;
     }
+    async findByEmail(email : string) : Promise <Alunos | null>{
+        const emailAluno = this.alunos.find((item) => item.email === email)
+
+        if (!emailAluno){
+            return null
+        } 
+
+        return emailAluno;
+
+    }
     async create(dados : Alunos) : Promise <Alunos> {
         
         dados.id = uuidv4();
@@ -42,6 +52,34 @@ class AlunoRepository{
 
         return dados;
     }
+    async update(id : string, dados : Alunos) : Promise <Alunos | null>{
+        console.log(id)
+        const index = this.alunos.findIndex((item) => item.id === id)
+
+        if (index == -1){
+            return null
+        } //findIndex retorna o indice, se retornar -1 é pq não há correspondências
+
+        this.alunos[index] = dados
+        dados.id = id // receber id no json e permitir atualização múltipla
+
+        return dados;
+    }
+    async delete(id : string) : Promise <Alunos[] | null> {
+        const index = this.alunos.findIndex((item) => item.id === id)
+
+        if (index == -1) {
+            return null
+        }
+
+        console.log(index)
+
+        const alunoDeletado = this.alunos.splice(index,1)
+
+        console.log(alunoDeletado)
+
+        return alunoDeletado;
+    }   
 }
 
 

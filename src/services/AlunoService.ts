@@ -21,11 +21,35 @@ class AlunosService{
         return alunoDados;
     }
     async create(dados : Alunos) : Promise<Alunos>{
+        const emailAluno = await this._alunoRespository.findByEmail(dados.email);
+
+        if (emailAluno) {
+            throw new Error ("Email já cadastrado!")
+        } 
+
         const dadosAlunos = await this._alunoRespository.create(dados)
 
         return dadosAlunos;
     }
+    async update(id : string, dados : Alunos) : Promise <Alunos>{
+        const alunoDados = await this._alunoRespository.update(id, dados)
+
+        if (!alunoDados){
+            throw new Error ("Aluno não encontrado!")
+        }
+
+        return alunoDados;
+    }
+    async delete(id : string) : Promise <Alunos[]>{
+        const alunoDados = await this._alunoRespository.delete(id)
+
+        if (!alunoDados){
+            throw new Error ("Esse aluno não existe!")
+        }
+
+        return alunoDados;
+    } 
 }
 
 
-export default AlunosService 
+export default AlunosService

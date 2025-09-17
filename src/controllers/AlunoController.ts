@@ -51,13 +51,33 @@ class AlunoController{
     }
     async update(Req : Request, Res : Response){
         try {
-            
+            const {id} = Req.params
+            const dados = Req.body
+
+            if (!dados || !id){
+                Res.status(400).json("Dados e id obrigatórios!")
+            }
+
+            const alunoDados = await alunoService.update(id, dados)
+
+
+            Res.status(200).json(alunoDados)
         } catch (err : any) {
             Res.status(400).json({error : err.message})
         }
     }
     async delete(Req : Request, Res : Response){
         try {
+
+            const {id} = Req.params
+
+            if (!id){
+                Res.status(400).json("Aluno não cadastrado no banco de dados.")
+            }
+
+            const alunoDados = await alunoService.delete(id)
+
+            Res.status(200).json(alunoDados)
             
         } catch (err : any) {
             Res.status(400).json({error : err.message})
