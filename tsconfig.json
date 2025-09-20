@@ -1,46 +1,14 @@
-{
-  "compilerOptions": {
-    // Target moderno do JS
-    "target": "ES2020",
-    
-    // Módulos ES compatíveis com Node
-    "module": "nodenext",
-    
-    // Diretórios de entrada e saída
-    "rootDir": "./src",
-    "outDir": "./dist",
-    
-    // Interoperabilidade com pacotes CommonJS
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    
-    // Verificação estrita de tipos
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    
-    // Gerar arquivos de declaração (útil para bibliotecas)
-    "declaration": true,
-    "declarationMap": true,
-    
-    // Sourcemaps para debugging
-    "sourceMap": true,
-    
-    // Suporte a import/export moderno
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    
-    // Evita erros com imports de módulos sem side effects
-    "noUncheckedSideEffectImports": true,
-    
-    // Ignorar checagem de libs externas
-    "skipLibCheck": true,
-    
-    // JSX (para projetos React, se necessário)
-    "jsx": "react-jsx"
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist"]
 
-}
+{
+    "compilerOptions": {
+      "target": "ES2020",
+      "module": "CommonJS",
+      "ignoreDeprecations": "6.0",
+      "rootDir": "./",
+      "esModuleInterop": true,
+      "strict": true
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules"]
+  }
+ 

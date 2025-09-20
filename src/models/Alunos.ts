@@ -6,4 +6,5 @@ export interface Alunos{
     password : string
     email : string
     telefone : string | null
+    
 }

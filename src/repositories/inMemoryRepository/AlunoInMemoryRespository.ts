@@ -1,5 +1,8 @@
-import type { Alunos } from "../models/Alunos.js";
+
+import type { Alunos } from "../../models/Alunos";
 import { v4 as uuidv4 } from 'uuid'
+
+
 
 class AlunoRepository{
     private alunos : Alunos[] = []

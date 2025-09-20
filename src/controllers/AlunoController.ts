@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import AlunosService from "../services/AlunoService.js";
-import AlunoRepository from "../repositories/AlunoRespository.js";
+import AlunosService from "../services/AlunoService";
+import AlunoPrismaRepository from "../repositories/Prisma/AlunoPrismaRepository";
 
-const alunoService = new AlunosService(new AlunoRepository());
+const alunoService = new AlunosService(new AlunoPrismaRepository());
 
 class AlunoController{
 
@@ -10,22 +10,6 @@ class AlunoController{
     async getAll(Req : Request, Res : Response) {
         try {
             const alunosDados = await alunoService.getAll();
-
-            Res.status(200).json(alunosDados)
-
-        } catch (err : any) {
-            Res.status(400).json({error : err.message})
-        }
-    }
-    async getById(Req : Request, Res : Response){
-        try {
-            const {id} = Req.params;
-
-            if (!id){
-                Res.json("ID OBRIGATÓRIO CHAMPS")
-            }
-
-            const alunosDados = await alunoService.getById(id)
 
             Res.status(200).json(alunosDados)
 
@@ -49,6 +33,24 @@ class AlunoController{
             Res.status(400).json({error : err.message})
         }
     }
+    
+    async getById(Req : Request, Res : Response){
+        try {
+            const {id} = Req.params;
+
+            if (!id){
+                Res.json("ID OBRIGATÓRIO CHAMPS")
+            }
+
+            const alunosDados = await alunoService.getById(id)
+
+            Res.status(200).json(alunosDados)
+
+        } catch (err : any) {
+            Res.status(400).json({error : err.message})
+        }
+    }
+
     async update(Req : Request, Res : Response){
         try {
             const {id} = Req.params
@@ -83,6 +85,10 @@ class AlunoController{
             Res.status(400).json({error : err.message})
         }
     }
+
+    /*async getPageCadastrar(Req : Request, Res : Response) {
+        Res.render("aluno");
+    }*/
 }
 
 

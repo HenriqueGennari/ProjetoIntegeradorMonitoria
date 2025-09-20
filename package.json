@@ -2,18 +2,21 @@
   "name": "monitoria",
   "version": "1.0.0",
   "main": "server.ts",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src --ext ts --exec \"node --loader ts-node/esm src/server.ts\""
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node src/server.ts\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.16.2",
     "@types/uuid": "^10.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
     "uuid": "^13.0.0"
   },
@@ -22,6 +25,7 @@
     "@types/express": "^4.17.23",
     "@types/nodemon": "^1.19.6",
     "nodemon": "^3.1.10",
+    "prisma": "^6.16.2",
     "ts-node": "^10.9.2"
   }
 }
