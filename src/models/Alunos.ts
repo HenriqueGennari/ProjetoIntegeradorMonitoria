@@ -1,10 +1,9 @@
-
-
-export interface Alunos{
-    id : string
-    nome : string
-    password : string
-    email : string
-    telefone : string | null
-    
+export interface Alunos {
+  id: string;
+  nome: string;
+  email: string;
+  senha: string;
+  telefone: string | null;
+  created_At: Date;
+  updated_At: Date;
 }

@@ -8,22 +8,7 @@ class AlunoRepository{
     private alunos : Alunos[] = []
 
     constructor(){
-        this.alunos = [
-            {
-                id : "b2bc1346-36f8-4865-9661-deafc4f0f6c8",
-                password : "12345678",
-                nome : "Henrique",
-                email : "rique@gmail.com",
-                telefone : "614453234"
-            },
-            {
-                id : "b2bc1346-36f8-4865-9661-deafc4f0f6c2",
-                password : "12345678",
-                nome : "Fernando",
-                email : "fernando@gmail.com",
-                telefone : "614453234"
-            },
-        ]
+        this.alunos = []
     }
 
     async getAll() : Promise<Alunos[]>{

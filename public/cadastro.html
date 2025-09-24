@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/aluno" method="POST">
+    <!---form action="http://localhost:3000/aluno" method="POST">
 
         <input type="text" name="nome" id="nome" placeholder="Nome">
         <input type="password" name="password" id="password" placeholder="Senha">
@@ -14,7 +14,18 @@
 
         <button type="submit">Cadastrar</button>
 
+    </form>-->
+
+    <form id="cadastroForm">
+        <input type="text" name="nome" placeholder="Nome">
+        <input type="password" name="senha" placeholder="Senha">
+        <input type="email" name="email" placeholder="Email">
+        <button type="submit">Cadastrar</button>
     </form>
 
+    <div id="mensagem"></div>
+
+
+    <script src="./scripts/validationCadastro.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // import express from "express";
 import dotenv from "dotenv"
-import routes from "./routes";
+import routes from "./routes/rotasAluno";
 
 const express = require('express');
 const cors = require('cors');

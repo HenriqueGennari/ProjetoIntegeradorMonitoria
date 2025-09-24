@@ -17,7 +17,7 @@ datasource db {
 model Aluno{
   id String @id @default(uuid())
   nome String
-  password String
+  senha String
   email String @unique
   telefone String?
   created_At DateTime @default(now())

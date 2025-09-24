@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import AlunosService from "../services/AlunoService";
-import AlunoPrismaRepository from "../repositories/Prisma/AlunoPrismaRepository";
+import AlunosService from "../../services/AlunoService/AlunoService";
+import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository";
 
 const alunoService = new AlunosService(new AlunoPrismaRepository());
 
@@ -21,16 +21,20 @@ class AlunoController{
         try {
             const dados = Req.body;
 
-            if(!dados.nome || !dados.password || !dados.email){
+            if(!dados.nome || !dados.senha || !dados.email){
                 Res.json("Os dados não foram preenchidos corretamente");
             }
 
             const dadosAlunos = await alunoService.create(dados)
 
+
             Res.status(200).json(dadosAlunos);
             
         } catch (err : any) {
-            Res.status(400).json({error : err.message})
+            if (err.message === "EMAIL_EXISTE") {
+                return Res.status(400).json({ erro: "EMAIL_EXISTE" });
+            }
+            return Res.status(500).json({ erro: "ERRO_INTERNO" });
         }
     }
     

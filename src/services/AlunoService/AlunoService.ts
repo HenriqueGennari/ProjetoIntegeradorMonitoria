@@ -1,6 +1,5 @@
-import type { Alunos } from "../models/Alunos";
-import type AlunoRepository from "../repositories/inMemoryRepository/AlunoInMemoryRespository";
-import type AlunoPrismaRepository from "../repositories/Prisma/AlunoPrismaRepository";
+import type { Alunos } from "../../models/Alunos";
+import type AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository";
 
 
 class AlunosService{
@@ -15,10 +14,12 @@ class AlunosService{
     }
     
     async create(dados : Alunos) : Promise<Alunos>{
+        
         const emailAluno = await this._alunoPrismaRepository.findByEmail(dados.email);
 
+
         if (emailAluno) {
-            throw new Error ("Email já cadastrado!")
+            throw new Error ("EMAIL_EXISTE")
         } 
 
         const dadosAlunos = await this._alunoPrismaRepository.create(dados)
