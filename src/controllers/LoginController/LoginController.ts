@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AuthService from "../../services/AuthService/AuthService";
 import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository";
+import { generateJWT } from "../../utils/jwt/jwt";
 
 
 const authService = new AuthService(new AlunoPrismaRepository());
@@ -9,8 +10,8 @@ class LoginController{
 
     async login(Req : Request, Res : Response){
 
-        try {
-            
+        try {            
+
             const dados = Req.body
 
             if (!dados.email || !dados.senha){
@@ -19,7 +20,9 @@ class LoginController{
 
             const user = await authService.validateUser(dados.email, dados.senha)
 
-            Res.status(200).json(user)
+            const token = await generateJWT({id : user.id, nome : user.nome, email : user.email} , "1h"); // o validateUser retorna o usuário do banco ( acessar authService para ver código)
+            
+            Res.status(200).json({user, token})
 
 
         } catch (err : any) {
@@ -31,6 +34,8 @@ class LoginController{
             }
             return Res.status(500).json({ erro: "ERRO_INTERNO" });
         }
+
+        
 
     }
 }

@@ -36,9 +36,7 @@ form.addEventListener("submit", async (e) => {
         mensagem.style.color = "red";
     } else {
         // sucesso
-        setTimeout(() => {
-            window.location.href = "sucesso.html";
-        }, 1000);
+            window.location.href = 'login.html'; // redireciono para o login 
     }
 
     } catch (err) {

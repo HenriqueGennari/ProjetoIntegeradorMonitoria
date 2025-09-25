@@ -1,5 +1,6 @@
 import type { Alunos } from "../../models/Alunos";
 import type AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository";
+import bcrypt from  "bcrypt";
 
 
 class AlunosService{
@@ -21,8 +22,15 @@ class AlunosService{
         if (emailAluno) {
             throw new Error ("EMAIL_EXISTE")
         } 
+        
+        const senhaHash = await bcrypt.hash(dados.senha, 10);
 
-        const dadosAlunos = await this._alunoPrismaRepository.create(dados)
+        const dadosComSenhaHash = {
+            ...dados,
+            senha : senhaHash
+        };
+
+        const dadosAlunos = await this._alunoPrismaRepository.create(dadosComSenhaHash)
 
         return dadosAlunos;
     }

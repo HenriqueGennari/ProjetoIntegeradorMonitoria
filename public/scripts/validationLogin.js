@@ -3,27 +3,29 @@ const form = document.getElementById("loginForm");
 const mensagem = document.getElementById("mensagem");
 
 form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // pra não enviar o formulário direto
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
 
-    if (!data.email || !data.senha) {
+    if (!data.email || !data.senha) { // validação do preenchimento dos campos
         mensagem.textContent = "Preencha todos os campos!";
         mensagem.style.color = "red";
         return;
     }
 
-    try {
+    try { // lógica de validação
+
         const res = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         });
 
-        const result = await res.json();
+        const result = await res.json(); // retornar o json e ver se há erros
 
         // trata todos os erros enviados pelo backend
+
         if (result.erro) {
             switch (result.erro) {
                 case "CREDENCIAIS_INVALIDAS":
@@ -40,8 +42,9 @@ form.addEventListener("submit", async (e) => {
             return; // impede o redirecionamento
         }
 
-        // se chegou aqui, login válido
-        window.location.href = "sucesso.html";
+        // se chegou aqui, login válido, redireciona para a home
+        localStorage.setItem("token", result.token);
+        window.location.href = "home.html";
 
     } catch (err) {
         mensagem.textContent = "Erro de rede ou servidor!";
