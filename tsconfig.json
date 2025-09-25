@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
-    "rootDir": "./",
+    "module": "NodeNext",          // <-- ATUALIZE AQUI
+    "moduleResolution": "NodeNext", // <-- E AQUI
+    "rootDir": "./src",
     "outDir": "dist",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    // "types": ["node"] // <-- Geralmente não é mais necessário com NodeNext, mas pode deixar se precisar
   },
-  "include": ["**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
