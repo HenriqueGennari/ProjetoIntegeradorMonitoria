@@ -36,6 +36,7 @@ form.addEventListener("submit", async (e) => {
         mensagem.style.color = "red";
     } else {
         // sucesso
+        
             window.location.href = 'login.html'; // redireciono para o login 
     }
 

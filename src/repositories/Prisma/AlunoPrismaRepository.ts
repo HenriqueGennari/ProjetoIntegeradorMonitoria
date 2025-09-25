@@ -34,7 +34,7 @@ class AlunoPrismaRepository{
         const novoAluno = await prisma.aluno.create({
             data
         })
-        console.log(novoAluno)
+
         return novoAluno;
     }
     async update(id : string, data : Alunos) : Promise <Alunos | null>{

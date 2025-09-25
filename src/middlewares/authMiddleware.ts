@@ -5,6 +5,7 @@ import "dotenv/config";
 // Extendendo o Request para incluir user
 
 export interface AuthRequest extends Request { // criando um type authrequest para atribuirmos o req.user 
+
   user?: {
     id: string;
     nome: string;
@@ -31,7 +32,6 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     const token = parts[1];
 
     // permite passar a chave para o verify
-
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET_NAO_DEFINIDO");
     }

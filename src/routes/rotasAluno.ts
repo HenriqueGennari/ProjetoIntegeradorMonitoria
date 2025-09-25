@@ -19,12 +19,13 @@ routes.use(express.static(path.join(__dirname, "..", "public")));
 
 routes.get("/alunos" , alunoController.getAll)
 routes.get("/aluno/:id" , alunoController.getById)
-routes.post("/aluno" , alunoController.create)
+routes.post("/aluno" , alunoController.create)  // rota que o cadastro.html irá dar fetch
 routes.put("/aluno/:id" , alunoController.update)
 routes.delete("/aluno/:id" , alunoController.delete)
 
 
 routes.post("/login", loginController.login)
+
 routes.get("/home", authMiddleware, (req : AuthRequest, res : Response) => {
   res.json({ nome: req.user?.nome });
 });
