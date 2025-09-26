@@ -3,28 +3,23 @@ import dotenv from "dotenv"
 import routes from "./routes/rotasAluno";
 import { Request, Response } from "express";
 
-const express = require('express');
-const cors = require('cors');
-
-const server = express();
 
 dotenv.config();
 
-server.use(cors()); 
+const express = require('express');
+const cors = require("cors");
+const server = express();
 
-// const path = require("path");
-
-// const viewsPath = path.join(__dirname, "views");
+server.use(cors({
+  origin: "https://projetointegeradormonitoria-1.onrender.com", // seu frontend no Render
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 server.use(express.static("public")); //arquivos html
-
 server.use(express.json());
 server.use(express.urlencoded({extended : true}))
 
-
-// server.set("views", viewsPath);
-// server.set('view engine', 'ejs');
-// server.use(express.static(viewsPath));
 
 server.get("/", (req : Request, res : Response) => {
     res.redirect("/cadastro.html");
