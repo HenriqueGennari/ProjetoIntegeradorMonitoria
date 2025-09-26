@@ -16,29 +16,31 @@ form.addEventListener("submit", async (e) => {
     console.log(data)
 
     try {
-    const res = await fetch("/aluno", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    });
+        const API_URL = window.location.hostname === "localhost" ? "http://localhost:3000" : "https://projetointegeradormonitoria.onrender.com";
 
-    const result = await res.json();
+        const res = await fetch(`${API_URL}/aluno`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
 
-        // agora trata os diferentes casos de status ou erro
-    if (!res.ok) {
-        if (result.erro === "EMAIL_EXISTE") {
-            mensagem.textContent = "Esse email já está cadastrado!";
-        } else if (result.erro === "DADOS_INCOMPLETOS") {
-            mensagem.textContent = "Preencha todos os campos corretamente!";
+        const result = await res.json();
+
+            // agora trata os diferentes casos de status ou erro
+        if (!res.ok) {
+            if (result.erro === "EMAIL_EXISTE") {
+                mensagem.textContent = "Esse email já está cadastrado!";
+            } else if (result.erro === "DADOS_INCOMPLETOS") {
+                mensagem.textContent = "Preencha todos os campos corretamente!";
+            } else {
+                mensagem.textContent = "Erro ao cadastrar!";
+            }
+            mensagem.style.color = "red";
         } else {
-            mensagem.textContent = "Erro ao cadastrar!";
+            // sucesso
+            
+                window.location.href = 'login.html'; // redireciono para o login 
         }
-        mensagem.style.color = "red";
-    } else {
-        // sucesso
-        
-            window.location.href = 'login.html'; // redireciono para o login 
-    }
 
     } catch (err) {
         mensagem.textContent = "Erro ao cadastrar, usuário existente ou credenciais inválidas!";
