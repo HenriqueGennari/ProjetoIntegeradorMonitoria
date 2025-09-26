@@ -27,6 +27,8 @@ server.use(express.urlencoded({extended : true}))
 
 server.use(routes);
 
-server.listen(process.env.PORT, () => {
-    console.log(`Server rodando na porta ${process.env.PORT}`)
-})
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+server.listen(PORT, () => {
+    console.log(`Server rodando na porta ${PORT}`);
+});
