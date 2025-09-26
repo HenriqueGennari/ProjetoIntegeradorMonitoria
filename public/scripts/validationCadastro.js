@@ -13,7 +13,6 @@ form.addEventListener("submit", async (e) => {
         mensagem.style.color = "red";
         return;
     }
-    console.log(data)
 
     try {
         const API_URL = window.location.hostname === "localhost" ? "http://localhost:3000" : "https://projetointegeradormonitoria.onrender.com";
