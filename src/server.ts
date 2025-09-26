@@ -32,7 +32,7 @@ server.get("/", (req : Request, res : Response) => {
 
 server.use(routes);
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 server.listen(PORT, () => {
     console.log(`Server rodando na porta ${PORT}`);
