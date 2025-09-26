@@ -37,10 +37,6 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     }
 
     // verifica o token
-
-    console.log("Token recebido:", token);
-    console.log("Authorization header:", req.headers.authorization);
-
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
 

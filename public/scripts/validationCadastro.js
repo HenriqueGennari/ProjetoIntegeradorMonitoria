@@ -18,6 +18,8 @@ form.addEventListener("submit", async (e) => {
     try {
         const API_URL = window.location.hostname === "localhost" ? "http://localhost:3000" : "https://projetointegeradormonitoria.onrender.com";
 
+        console.log(API_URL)
+
         const res = await fetch(`${API_URL}/aluno`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
