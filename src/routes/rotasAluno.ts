@@ -30,8 +30,6 @@ routes.get("/home", authMiddleware, (req : AuthRequest, res : Response) => {
   res.json({ nome: req.user?.nome });
 });
 
-console.log("testando render")
-  
 // routes.get("/", homeController.getHome)
 
 export default routes

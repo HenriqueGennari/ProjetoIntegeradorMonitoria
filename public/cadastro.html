@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style> 
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #dadosForm{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;     
+            height: 100vh;           
+            text-align: center;      
+        }
+
+        #cadastroForm {
+            display: flex;          
+            flex-direction: column;  
+            gap: 12px;            
+        }
+    </style>
 </head>
 <body>
     <!---form action="http://localhost:3000/aluno" method="POST">
@@ -16,14 +38,16 @@
 
     </form>-->
 
-    <form id="cadastroForm">
-        <input type="text" name="nome" placeholder="Nome">
-        <input type="password" name="senha" placeholder="Senha">
-        <input type="email" name="email" placeholder="Email">
-        <button type="submit">Cadastrar</button>
-    </form>
-
-    <div id="mensagem"></div>
+    <div id="dadosForm">
+        <form id="cadastroForm">
+            <input type="text" name="nome" placeholder="Nome">
+            <input type="password" name="senha" placeholder="Senha">
+            <input type="email" name="email" placeholder="Email">
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p>Já tem uma conta? Faça seu <a href="login.html" target="_blank">login!</a></p>
+        <div id="mensagem"></div>
+    </div>
 
 
     <script src="./scripts/validationCadastro.js"></script>
