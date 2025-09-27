@@ -10,11 +10,15 @@ const express = require('express');
 const cors = require("cors");
 const server = express();
 
-server.use(cors({
+/*server.use(cors({
   origin: "https://projetointegeradormonitoria-1.onrender.com", // seu frontend no Render
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
-}));
+}));*/
+
+server.use(cors({
+  origin: true
+})); 
 
 server.use(express.static("public")); //arquivos html
 server.use(express.json());
