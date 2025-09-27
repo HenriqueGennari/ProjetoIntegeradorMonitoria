@@ -15,11 +15,11 @@ form.addEventListener("submit", async (e) => {
     }
 
     try {
-        const API_URL = window.location.hostname === "localhost" ? "http://localhost:3000" : "https://projetointegeradormonitoria.onrender.com";
+        /*const API_URL = window.location.hostname === "localhost" ? "http://localhost:3000" : "https://projetointegeradormonitoria.onrender.com";*/ //essa lógica apresenta erro de cors pois no render estamos servindo a aplicação (front e back end) da mesma origem
 
-        console.log(API_URL)
+        // console.log(API_URL)
 
-        const res = await fetch(`${API_URL}/aluno`, {
+        const res = await fetch('/aluno', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),

@@ -17,8 +17,9 @@ const server = express();
 }));*/
 
 server.use(cors({
-  origin: true
-})); 
+  origin: "https://projetointegeradormonitoria-1.onrender.com",
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}));
 
 server.use(express.static("public")); //arquivos html
 server.use(express.json());
