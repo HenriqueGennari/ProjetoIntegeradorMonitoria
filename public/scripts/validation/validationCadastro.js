@@ -1,6 +1,22 @@
 
 const form = document.getElementById("cadastroForm");
 const mensagem = document.getElementById("mensagem");
+const btnCadastrar = document.getElementById("btnCadastrar");
+const btnText = btnCadastrar.querySelector(".btn-text");
+const btnSpinner = btnCadastrar.querySelector(".btn-spinner");
+
+function setLoading(loading, redirecting = false) {
+    btnCadastrar.disabled = loading;
+    if (redirecting) {
+        btnText.textContent = "Redirecionando";
+        btnText.classList.remove("hidden");
+        btnSpinner.classList.remove("hidden");
+    } else {
+        btnText.textContent = "Cadastrar";
+        btnText.classList.toggle("hidden", loading);
+        btnSpinner.classList.toggle("hidden", !loading);
+    }
+}
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault(); // evita redirecionamento padrão
@@ -20,6 +36,9 @@ form.addEventListener("submit", async (e) => {
         mensagem.style.color = "red";
         return;
     }
+
+    setLoading(true);
+    mensagem.textContent = "";
 
     try {
         const res = await fetch('/alunos', {
@@ -41,13 +60,16 @@ form.addEventListener("submit", async (e) => {
                 mensagem.textContent = "Erro ao cadastrar! Verifique se a matrícula possui 8 dígitos!";
             }
             mensagem.style.color = "red";
+            setLoading(false);
         } else {
+            setLoading(true, true);
             window.location.href = 'login.html';
         }
 
     } catch (err) {
         mensagem.textContent = "Erro ao cadastrar, usuário existente ou credenciais inválidas!";
         mensagem.style.color = "red";
+        setLoading(false);
     }
 });
 

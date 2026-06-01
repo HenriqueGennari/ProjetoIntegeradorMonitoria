@@ -172,6 +172,10 @@ button[type='submit'] .btn-spinner {
     display: inline-block;
 }
 
+button[type='submit'] .btn-text.hidden {
+    display: none;
+}
+
 button[type='submit'] .btn-spinner.hidden {
     display: none;
 }
