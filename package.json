@@ -8,7 +8,17 @@
     "prisma:migrate": "prisma migrate deploy",
     "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --ext ts --exec \"tsx src/server.ts\""
+    "dev": "nodemon --watch src --ext ts --exec \"tsx src/server.ts\"",
+    "k6:smoke": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/smoke/smoke-login.js",
+    "k6:smoke:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/smoke/smoke-login.js",
+    "k6:load": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/load/load-monitorias.js",
+    "k6:load:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/load/load-monitorias.js",
+    "k6:stress": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/stress/stress-monitorias.js",
+    "k6:stress:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/stress/stress-monitorias.js",
+    "k6:spike": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/spike/spike-login.js",
+    "k6:spike:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/spike/spike-login.js",
+    "k6:soak": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/soak/soak-mixed.js",
+    "k6:soak:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/soak/soak-mixed.js"
   },
   "keywords": [],
   "author": "",
