@@ -7,11 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  # ============================================================
-  # JOB 1: BUILD
-  # Verifica se o código compila corretamente
-  # ============================================================
-  build:
+  build: #build padrão pra ver se tem erro de compilação 
     name: Compilação
     runs-on: ubuntu-latest
 
@@ -22,7 +18,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20" # Versão LTS recomendada para o ecossistema atual
+          node-version: "20"
 
       - name: Instalar dependências
         run: npm install
@@ -31,7 +27,7 @@ jobs:
         run: npm run build
 
         
-  smoke:
+  smoke: #smoke do login que só verifica se o endpoint tá acessível e responsivo
     name: Smoke Test
     needs: build 
     runs-on: ubuntu-latest
@@ -60,13 +56,11 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 30000
 
       - name: Instalar k6
-        run: |
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
+        uses: grafana/setup-k6-action@v1
 
       - name: Rodar smoke test
-        run: k6 run tests/k6/smoke/smoke-login.js
+        uses: grafana/run-k6-action@v1
+        with:
+          path: tests/k6/smoke/smoke-login.js
         env:
           BASE_URL: http://localhost:3000
