@@ -117,6 +117,7 @@ model Monitoria {
   local   Local @relation(fields: [localId], references: [id])
 
   inscricoes Inscricao[]
+  ata        String?    @db.Text
   deletedAt  DateTime?
   expiredAt  DateTime?
 
