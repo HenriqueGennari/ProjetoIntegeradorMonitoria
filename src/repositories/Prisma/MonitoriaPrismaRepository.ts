@@ -261,14 +261,14 @@ class MonitoriaPrismaRepository {
   }
 
   async update( id: string, data: Prisma.MonitoriaUncheckedUpdateInput ): Promise<Monitoria | null> {
-    const monitoriaAtualizadA = await prisma.monitoria.update({
+    const monitoriaAtualizada = await prisma.monitoria.update({
       data,
       where: {
         id: id,
       },
     });
 
-    return monitoriaAtualizadA;
+    return monitoriaAtualizada;
   }
 
   async delete(id: string): Promise<Monitoria> {
