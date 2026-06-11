@@ -1,6 +1,7 @@
 import { json } from "stream/consumers";
 import MonitoriaPrismaRepository from "../../repositories/Prisma/MonitoriaPrismaRepository.js";
 import { Monitoria } from "@prisma/client";
+import { eventEmmiter } from "../../utils/events/Evento.js";
 
 interface MonitoriaInput {
   nome_monitoria: string;
@@ -145,6 +146,10 @@ class MonitoriaService {
     }
 
     const monitoriaNova = await this._monitoriaRepository.create(dadosFormatados)
+
+
+
+    const evento = eventEmmiter.emit("Monitoria:Criada")
 
 
     return monitoriaNova;
