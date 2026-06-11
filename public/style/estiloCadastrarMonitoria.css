@@ -107,6 +107,13 @@ body {
     padding-right: 38px;
 }
 
+.campo select:disabled {
+    cursor: not-allowed;
+    background-color: #f1f5f9;
+    color: #64748b;
+    opacity: 0.8;
+}
+
 .campo textarea {
     resize: vertical;
     min-height: 80px;
