@@ -117,7 +117,7 @@ class MonitoriaService {
     return dadosChamada;
   } // chamada de uma monitoria, pega quem são os alunos inscritos
 
-  async create(dados: MonitoriaInput): Promise<Monitoria> {
+  async create(dados: MonitoriaInput, usuarioId: string): Promise<Monitoria> {
     const inicio = criarDateBRT(dados.data, dados.hora_inicio);
     const fim = criarDateBRT(dados.data, dados.hora_fim);
 
@@ -125,7 +125,7 @@ class MonitoriaService {
       throw new Error("HORARIO_INVALIDO: O horário de início deve ser anterior ao horário de fim.");
     }
 
-    
+
     const dadosFormatados: any = {
       nome_monitoria: dados.nome_monitoria,
       inicio,
@@ -147,10 +147,19 @@ class MonitoriaService {
 
     const monitoriaNova = await this._monitoriaRepository.create(dadosFormatados)
 
+    // emitindo o evento para a auditoria
+    const eventoCreateMonitoria = eventEmmiter.emit("Monitoria:Criada", {
+      usuarioId,
+      monitoriaId: monitoriaNova.id,
+      monitoria: {
+        nome: monitoriaNova.nome_monitoria,
+        data: monitoriaNova.inicio.toISOString(),
+        monitorId: monitoriaNova.monitorId,
+      },
+    });
 
-
-    const evento = eventEmmiter.emit("Monitoria:Criada")
-
+    console.log("Alguém ouviu?", eventoCreateMonitoria)
+    console.log("EVENTO EMITIDO ( CREATE MONITORIA) ")
 
     return monitoriaNova;
   } // cria monitoria

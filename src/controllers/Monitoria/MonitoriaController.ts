@@ -93,7 +93,8 @@ class MonitoriaController{
     async create(req: Request, res: Response) {
         try {
             const dados = req.body;
-            const monitoriaCriada = await monitoriaService.create(dados);
+            const user = (req as AuthRequest).user;
+            const monitoriaCriada = await monitoriaService.create(dados, user!.id);
 
             return res.status(201).json(monitoriaCriada);
 

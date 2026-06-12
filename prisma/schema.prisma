@@ -138,3 +138,15 @@ model Inscricao {
 
   @@map("inscricao")
 }
+
+model Auditoria {
+  id         Int      @id @default(autoincrement())
+  usuarioId  String
+  acao       String
+  entidade   String
+  entidadeId String
+  detalhes   Json?
+  criadoEm   DateTime @default(now())
+
+  @@map("auditoria")
+}
