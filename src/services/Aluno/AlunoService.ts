@@ -171,7 +171,12 @@ class AlunosService{
         return alunoAtualizado;
     }
 
-    async delete(id : string) : Promise <Aluno>{
+    async delete(id : string, usuarioId : string) : Promise <Aluno>{
+        
+        if (id === usuarioId) {
+            throw new Error ("AUTO_EXCLUSAO_NAO_PERMITIDA")
+        }
+
         const alunoDados = await this._alunoPrismaRepository.delete(id)
 
         if (!alunoDados){

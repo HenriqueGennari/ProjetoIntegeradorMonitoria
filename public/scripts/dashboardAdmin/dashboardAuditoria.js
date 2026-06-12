@@ -1,7 +1,9 @@
 import { getAuthHeaders } from "../utils/getAuthHeaders.js";
 
-const tabelaBody = document.querySelector("#tabelaAuditoria tbody");
-const statTotal = document.getElementById("statTotal");
+const tbody = document.getElementById("corpoTabelaAuditoria");
+const buscaInput = document.getElementById("buscaAuditoria");
+
+let registrosCache = [];
 
 function formatarData(dataString) {
     const data = new Date(dataString);
@@ -20,9 +22,16 @@ function formatarDetalhes(detalhes) {
 
     if (typeof detalhes === "object") {
         const partes = [];
+
+        // detalhes de criação de monitoria
         if (detalhes.nome) partes.push(`Nome: ${detalhes.nome}`);
         if (detalhes.data) partes.push(`Data: ${new Date(detalhes.data).toLocaleString("pt-BR")}`);
         if (detalhes.monitorId) partes.push(`Monitor: ${detalhes.monitorId}`);
+
+        // detalhes de login
+        if (detalhes.email) partes.push(`Email: ${detalhes.email}`);
+        if (detalhes.matricula) partes.push(`Matrícula: ${detalhes.matricula}`);
+
         return partes.length ? partes.join(" | ") : JSON.stringify(detalhes);
     }
 
@@ -30,7 +39,7 @@ function formatarDetalhes(detalhes) {
 }
 
 async function carregarAuditoria() {
-    tabelaBody.innerHTML = '<tr><td colspan="6">Carregando registros...</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="6" class="sem-dados">Carregando...</td></tr>`;
 
     try {
         const response = await fetch("/auditorias", {
@@ -43,23 +52,23 @@ async function carregarAuditoria() {
         }
 
         const registros = await response.json();
-        statTotal.textContent = registros.length;
+        registrosCache = registros;
         renderizarTabela(registros);
     } catch (err) {
-        tabelaBody.innerHTML = `<tr><td colspan="6">Erro: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="sem-dados">Erro: ${err.message}</td></tr>`;
     }
 }
 
 function renderizarTabela(registros) {
-    if (registros.length === 0) {
-        tabelaBody.innerHTML = '<tr><td colspan="6">Nenhum registro encontrado.</td></tr>';
+    if (!registros || registros.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="sem-dados">Nenhum registro encontrado</td></tr>`;
         return;
     }
 
-    tabelaBody.innerHTML = registros.map((registro) => `
+    tbody.innerHTML = registros.map((registro) => `
         <tr>
             <td>${formatarData(registro.criadoEm)}</td>
-            <td>${registro.usuarioId}</td>
+            <td>${registro.usuario?.nome || registro.usuarioId}</td>
             <td>${registro.acao}</td>
             <td>${registro.entidade}</td>
             <td>${registro.entidadeId}</td>
@@ -67,5 +76,25 @@ function renderizarTabela(registros) {
         </tr>
     `).join("");
 }
+
+function filtrarRegistros() {
+    const termo = buscaInput.value.toLowerCase();
+
+    const filtrados = registrosCache.filter((registro) => {
+        const nomeUsuario = (registro.usuario?.nome || "").toLowerCase();
+        const acao = (registro.acao || "").toLowerCase();
+        const entidade = (registro.entidade || "").toLowerCase();
+        const entidadeId = (registro.entidadeId || "").toLowerCase();
+
+        return nomeUsuario.includes(termo) ||
+            acao.includes(termo) ||
+            entidade.includes(termo) ||
+            entidadeId.includes(termo);
+    });
+
+    renderizarTabela(filtrados);
+}
+
+buscaInput?.addEventListener("input", filtrarRegistros);
 
 carregarAuditoria();

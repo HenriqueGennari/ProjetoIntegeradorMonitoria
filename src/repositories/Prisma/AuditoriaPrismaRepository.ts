@@ -9,17 +9,26 @@ interface DadosAuditoria {
 }
 
 class AuditoriaPrismaRepository {
-  // retorna todos os registros da tabela
+  
   async getAll() {
-    return await prisma.auditoria.findMany({
+    const res =  await prisma.auditoria.findMany({
+      include: {
+        usuario: {
+          select: {
+            nome: true,
+          },
+        },
+      },
       orderBy: {
         criadoEm: "desc",
       },
-    });
-  }
+    })
+    
+    return res;
+  }// retorna todos os registros da tabela com o nome do usuário
 
-  // cria log de auditoria de criação de monitoria
-  async createMonitoria(payload: DadosAuditoria) {
+  
+  async createAuditoria(payload: DadosAuditoria) {
     const auditoria = await prisma.auditoria.create({
       data: {
         usuarioId: payload.usuarioId,
@@ -31,7 +40,7 @@ class AuditoriaPrismaRepository {
     });
 
     return auditoria;
-  }
+  }// cria log de auditoria de criação de monitoria
 }
 
 export default AuditoriaPrismaRepository;

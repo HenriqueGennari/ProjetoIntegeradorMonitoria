@@ -41,6 +41,7 @@ model Aluno {
 
   monitorias Monitoria[]
   inscricoes Inscricao[]
+  auditorias Auditoria[]
 
   @@map("aluno")
 }
@@ -147,6 +148,8 @@ model Auditoria {
   entidadeId String
   detalhes   Json?
   criadoEm   DateTime @default(now())
+
+  usuario Aluno @relation(fields: [usuarioId], references: [id])
 
   @@map("auditoria")
 }

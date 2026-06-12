@@ -13,10 +13,28 @@ eventEmmiter.on("Monitoria:Criada", async (payload) => {
             detalhes: payload.monitoria // nome, data e monitor
         };
 
-        const salvarAuditoria = await auditoriaRepository.createMonitoria(dadosAuditoria);
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
     } catch (err: any) {
         console.log(err.message);
     }
 
-    console.log("[Auditoria] Evento Monitoria:Criada recebido", payload);
+    console.log("[Auditoria] Evento Monitoria:Criada recebido");
+});
+
+eventEmmiter.on("Aluno:Login", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: payload.acao,
+            entidade: payload.entidade,
+            entidadeId: payload.entidadeId,
+            detalhes: payload.detalhes // email e matricula
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Aluno:Login recebido");
 });

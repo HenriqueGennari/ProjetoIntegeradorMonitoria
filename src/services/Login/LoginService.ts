@@ -2,6 +2,7 @@
 import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js"
 import bcrypt from "bcrypt"
 import { getPepper } from "../../utils/security/pepper.js";
+import { eventEmmiter } from "../../utils/events/Evento.js";
 
 
 class AuthService{
@@ -21,6 +22,17 @@ class AuthService{
         if(!user || !senhaValida){
             throw new Error ("CREDENCIAIS_INVALIDAS");
         }
+
+        eventEmmiter.emit("Aluno:Login", { // evento de auditoria de login 
+            usuarioId: user.id,
+            acao: "LOGIN",
+            entidade: "Aluno",
+            entidadeId: user.id,
+            detalhes: {
+                email: user.email,
+                matricula: user.matricula
+            }
+        });
 
         return user;
     }

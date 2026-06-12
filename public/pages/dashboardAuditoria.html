@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="../style/styleNavMenuLateral.css">
     <link rel="stylesheet" href="../style/estiloDashboardAdmin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../style/historicoMonitorias.css?v=3">
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
     <script type="module" src="../scripts/menuLateral/menuLateral.js"></script>
     <script type="module" src="../scripts/menuLateral/ocultarAbasPorPerfil.js"></script>
@@ -109,10 +109,9 @@
     </nav>
 
     <div class="dashboard-container">
-        <div class="stats-grid">
-            <div class="stat-card total">
-                <div class="stat-label">Total de Registros</div>
-                <div class="stat-value" id="statTotal">0</div>
+        <div class="historico-filtros">
+            <div class="filtro-busca">
+                <input type="text" id="buscaAuditoria" placeholder="Buscar por usuário, ação ou entidade...">
             </div>
         </div>
 
@@ -128,16 +127,16 @@
                         <th>Detalhes</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="corpoTabelaAuditoria">
                     <tr>
-                        <td colspan="6">Carregando registros...</td>
+                        <td colspan="6" class="sem-dados">Carregando...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <script type="module" src="../scripts/dashboardAdmin/dashboardAuditoria.js"></script>
+    <script type="module" src="../scripts/dashboardAdmin/dashboardAuditoria.js?v=2"></script>
 </body>
 
 </html>
