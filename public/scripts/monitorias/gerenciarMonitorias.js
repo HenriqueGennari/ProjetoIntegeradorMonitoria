@@ -234,6 +234,19 @@ async function carregarMonitorias() {
                         formUpdate.querySelector('input[name="hora_inicio"]').value = new Date(m.inicio).toTimeString().slice(0, 5);
                         formUpdate.querySelector('input[name="hora_fim"]').value = new Date(m.fim).toTimeString().slice(0, 5);
 
+                        // bloqueia o campo de ata se a monitoria ainda não começou
+                        const ataTextarea = formUpdate.querySelector('textarea[name="ata"]');
+                        const agora = new Date();
+                        const dataInicioMonitoria = new Date(m.inicio);
+                        const ataBloqueada = dataInicioMonitoria > agora;
+
+                        ataTextarea.disabled = ataBloqueada;
+                        if (ataBloqueada) {
+                            ataTextarea.title = "A ata só pode ser preenchida após o início da monitoria";
+                        } else {
+                            ataTextarea.title = "";
+                        }
+
                         const selectCampus = document.getElementById("campus");
                         const selectLocal = document.getElementById("locais");
                         const selectCurso = document.getElementById("cursos");
@@ -571,6 +584,11 @@ if (formAtualizar) {
         const dadosParaAtualizar = Object.fromEntries(formData);
 
         delete dadosParaAtualizar.id_monitoria;
+
+        // não envia o campo ata se estiver vazio, para não disparar a validação do backend
+        if (dadosParaAtualizar.ata === "") {
+            delete dadosParaAtualizar.ata;
+        }
 
         try {
             const response = await fetch(`/monitorias/${idMonitoria}`, {
