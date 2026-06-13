@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/*
+Pela mudança que fizemos do postgres para o cockroach, TODOS os campos que usam Int, vão precisar ser alterados para BigInt. A razão disso é o sequence() que gera id's grandes por padrão, usando o rowid, então nos trechos dos arquivos que fazemos a conversão dos dados, vamos precisar adaptar. Localmente, é possível mudar a forma que o sequence gera os id's para usar o sql_sequence, que é a forma padrão que o postgres gerou os id's anteriormente. A partir de hoje, qualquer tabela nova com id, vai ser necessário usar o BigInt pro cockroach não dar piti.
+
+
+*/
+
 model Perfil {
   id        Int     @id @default(sequence())
   nome      String  @unique
@@ -115,7 +121,7 @@ model Monitoria {
   local   Local @relation(fields: [localId], references: [id])
 
   inscricoes Inscricao[]
-  ata        String?    @db.Text
+  ata        String?   
   deletedAt  DateTime?
   expiredAt  DateTime?
 

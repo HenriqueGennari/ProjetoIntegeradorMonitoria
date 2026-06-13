@@ -38,7 +38,6 @@ async function main() {
     });
   }
 
-  await prisma.$executeRaw`SELECT setval('perfil_id_seq', 3)`;
   console.log("Seed concluído: 3 perfis inseridos/atualizados.");
 
   // 2. Alunos
@@ -94,7 +93,6 @@ async function main() {
       await prisma.curso.create({ data: curso });
     }
   }
-  await prisma.$executeRaw`SELECT setval('curso_id_seq', 3)`;
   console.log("Seed concluído: 3 cursos inseridos/atualizados.");
 
   // 4. Disciplinas
@@ -119,24 +117,27 @@ async function main() {
 
   // 4.1 Relação Disciplina-Curso (N:M)
   const disciplinaCursoLinks = [
-    { disciplinaNome: "Banco de dados", cursoId: 1 },
-    { disciplinaNome: "Lógica de programação", cursoId: 1 },
-    { disciplinaNome: "Desenho Arquitetônico", cursoId: 2 },
-    { disciplinaNome: "Teoria da Arquitetura", cursoId: 2 },
-    { disciplinaNome: "Direito Constitucional", cursoId: 3 },
-    { disciplinaNome: "Direito Penal", cursoId: 3 },
+    { disciplinaNome: "Banco de dados", cursoNome: "Ciência da Computação" },
+    { disciplinaNome: "Lógica de programação", cursoNome: "Ciência da Computação" },
+    { disciplinaNome: "Desenho Arquitetônico", cursoNome: "Arquitetura" },
+    { disciplinaNome: "Teoria da Arquitetura", cursoNome: "Arquitetura" },
+    { disciplinaNome: "Direito Constitucional", cursoNome: "Direito" },
+    { disciplinaNome: "Direito Penal", cursoNome: "Direito" },
   ];
 
   for (const link of disciplinaCursoLinks) {
     const disciplina = await prisma.disciplina.findFirst({
       where: { nome: link.disciplinaNome },
     });
-    if (disciplina) {
+    const curso = await prisma.curso.findFirst({
+      where: { nome: link.cursoNome },
+    });
+    if (disciplina && curso) {
       const existe = await prisma.disciplinaCurso.findUnique({
         where: {
           disciplinaId_cursoId: {
             disciplinaId: disciplina.id,
-            cursoId: link.cursoId,
+            cursoId: curso.id,
           },
         },
       });
@@ -144,7 +145,7 @@ async function main() {
         await prisma.disciplinaCurso.create({
           data: {
             disciplinaId: disciplina.id,
-            cursoId: link.cursoId,
+            cursoId: curso.id,
           },
         });
       }
@@ -166,7 +167,6 @@ async function main() {
     });
   }
 
-  await prisma.$executeRaw`SELECT setval('campus_id_seq', 2)`;
   console.log("Seed concluído: 2 campus inseridos/atualizados.");
 
   // 6. Locais
@@ -183,15 +183,14 @@ async function main() {
     });
   }
 
-  await prisma.$executeRaw`SELECT setval('local_id_seq', 2)`;
   console.log("Seed concluído: 2 locais inseridos/atualizados.");
 
   // 7. Monitorias
   const monitor = await prisma.aluno.findUnique({ where: { email: "paulo@email.com" } });
   const bd = await prisma.disciplina.findFirst({ where: { nome: "Banco de dados" } });
   const logica = await prisma.disciplina.findFirst({ where: { nome: "Lógica de programação" } });
-  const sala170 = await prisma.local.findUnique({ where: { id: 1 } });
-  const sala160 = await prisma.local.findUnique({ where: { id: 2 } });
+  const sala170 = await prisma.local.findFirst({ where: { nome: "Sala 170" } });
+  const sala160 = await prisma.local.findFirst({ where: { nome: "Sala 160" } });
 
   if (monitor && bd && sala170) {
     const m1 = await prisma.monitoria.findFirst({
