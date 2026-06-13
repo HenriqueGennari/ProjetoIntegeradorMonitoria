@@ -12,7 +12,7 @@ generator erd {
 
 
 datasource db {
-  provider = "cockroach"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
