@@ -6,10 +6,7 @@ generator erd {
   provider        = "prisma-erd-generator"
   output          = "./erd.svg"
   puppeteerConfig = "prisma/puppeteer-config.json"
-} //pode ser comentado toda essa configuração para não dar erro no prisma ao fazer o reset das migrations, ou usar: npx prisma migrate reset --skip-generate, caso queira instalar: npm install -D prisma-erd-generator @mermaid-js/mermaid-cli. Se o client estiver errado, use: npx prisma migrate reset --force, vai gerar o client de novo 
-
-
-
+} 
 
 datasource db {
   provider = "cockroachdb"
@@ -17,7 +14,7 @@ datasource db {
 }
 
 model Perfil {
-  id        Int     @id @default(autoincrement())
+  id        Int     @id @default(sequence())
   nome      String  @unique
   descricao String?
 
@@ -46,7 +43,7 @@ model Aluno {
 }
 
 model Curso {
-  id          Int               @id @default(autoincrement())
+  id          Int               @id @default(sequence())
   nome        String            @unique
   descricao   String?
 
@@ -56,7 +53,7 @@ model Curso {
 }
 
 model Disciplina {
-  id        Int               @id @default(autoincrement())
+  id        Int               @id @default(sequence())
   nome      String            @unique
   descricao String?
 
@@ -78,7 +75,7 @@ model DisciplinaCurso {
 }
 
 model Campus {
-  id        Int     @id @default(autoincrement())
+  id        Int     @id @default(sequence())
   nome      String
   descricao String?
 
@@ -88,7 +85,7 @@ model Campus {
 }
 
 model Local {
-  id        Int     @id @default(autoincrement())
+  id        Int     @id @default(sequence())
   nome      String
   descricao String?
   campusId  Int
@@ -102,8 +99,8 @@ model Local {
 
 model Monitoria {
   id             String   @id @default(dbgenerated("gen_random_uuid()"))
-  nome_monitoria String   @db.VarChar(200)
-  descricao      String?  @db.VarChar(200)
+  nome_monitoria String   
+  descricao      String?  
   inicio         DateTime
   fim            DateTime
 
@@ -124,7 +121,7 @@ model Monitoria {
 }
 
 model Inscricao {
-  id          Int      @id @default(autoincrement())
+  id          Int      @id @default(sequence())
   alunoId     String
   monitoriaId String
   criadoEm    DateTime @default(now())
