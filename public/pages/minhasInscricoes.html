@@ -95,24 +95,29 @@
     <div id="overlay" class="overlay-menu"></div>
 
     <main class="inscricoes-container">
-        <div class="inscricoes-header">
-            <h1>Minhas inscrições</h1>
-        </div>
+        <div class="boasvindas">
+            <h1>Minhas Inscrições</h1>
 
-        <div class="divBuscar">
-            <div class="input-busca-wrapper">
-                <img src="../assets/img/lupa.png" alt="" class="icone-lupa">
-                <input type="text" id="buscaMonitoria" placeholder="Buscar monitoria ou disciplina...">
+            <div class="divBuscar">
+                <div class="input-busca-wrapper">
+                    <img src="../assets/img/lupa.png" alt="" class="icone-lupa">
+                    <input type="text" id="buscaMonitoria" placeholder="Buscar monitoria ou disciplina...">
+                </div>
+                <select id="ordenarMonitorias" class="select-ordenar">
+                    <option value="recente">Mais recente</option>
+                    <option value="antiga">Mais antiga</option>
+                </select>
             </div>
-            <select id="ordenarMonitorias" class="select-ordenar">
-                <option value="recente">Mais recente</option>
-                <option value="antiga">Mais antiga</option>
-            </select>
         </div>
 
-        <div class="inscricoes-lista" id="listaInscricoes">
-            <!-- Cards serão inseridos via JS -->
-        </div>
+        <section class="sectionmonitorias">
+            <div class="exibirmonitorias">
+                <h2 id="titulomonitorias">Próximas Monitorias:</h2>
+
+                <div class="inscricoes-lista" id="listaInscricoes">
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Modal de Detalhes -->
