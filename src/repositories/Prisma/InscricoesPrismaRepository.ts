@@ -77,9 +77,6 @@ class InscricaoPrismaRepository {
       },
     });
 
-    console.log("Inscricao repository")
-    console.log(inscricaoId)
-
     return inscricaoId;
   }
   

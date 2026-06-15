@@ -633,6 +633,12 @@ transform: scale(1.05);
     margin-bottom: 15px;
 }
 
+/* cursor de proibido no campo de ata desabilitado */
+textarea[name="ata"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .popup-sucesso-content p {
     font-size: 1.2rem;
     font-weight: 600;

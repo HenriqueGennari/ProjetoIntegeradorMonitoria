@@ -10,29 +10,79 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-.inscricoes-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 90px 20px 40px;
+.inscricoes-filtros {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 30px 40px 10px 100px;
+    flex-wrap: wrap;
 }
 
-.inscricoes-header {
-    text-align: center;
-    padding: 20px 0 10px;
-    margin-top: 70px;
+.inscricoes-filtros .input-busca-wrapper {
+    position: relative;
+    width: 45%;
+    min-width: 250px;
 }
 
-.inscricoes-header h1 {
+.inscricoes-filtros .input-busca-wrapper input {
+    width: 100%;
+    padding: 10px 40px 10px 40px;
+    border: 1.5px solid #ccc;
+    border-radius: 25px;
+    background-color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #333;
+}
+
+.inscricoes-filtros .input-busca-wrapper input:focus {
+    border-color: #024059;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.inscricoes-filtros .select-ordenar {
+    padding: 10px 16px;
+    border: 1.5px solid #ccc;
+    border-radius: 25px;
+    background: white;
+    color: #333;
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23024059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+    transition: all 0.3s ease;
+}
+
+.inscricoes-filtros .select-ordenar:focus {
+    border-color: #024059;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.inscricoes-titulo {
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #024059;
+    text-align: center;
+    padding: 10px 0 20px;
+    margin: 0;
 }
 
 .inscricoes-lista {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
-    padding: 30px 0;
+    padding: 30px 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    justify-items: center;
 }
 
 .inscricao-card {
@@ -219,7 +269,17 @@ body {
 }
 
 @media (max-width: 768px) {
-    .inscricoes-header h1 {
+    .inscricoes-filtros {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .inscricoes-filtros .input-busca-wrapper,
+    .inscricoes-filtros .select-ordenar {
+        width: 100%;
+    }
+
+    .inscricoes-titulo {
         font-size: 1.8rem;
     }
 

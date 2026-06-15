@@ -73,21 +73,33 @@ class InscricoesController {
         }
     }
 
-    async create(Req: Request, Res: Response) {
+    async create(Req: AuthRequest, Res: Response) {
         try {
             const dados = Req.body;
-            const dadosInscricoes = await inscricoesService.create(dados)
+            const usuarioId = Req.user?.id;
+
+            if (!usuarioId) {
+                return Res.status(401).json({ error: "USUARIO_NAO_AUTENTICADO" });
+            }
+
+            const dadosInscricoes = await inscricoesService.create(dados, usuarioId)
             return Res.status(201).json(dadosInscricoes);
 
         } catch (err: any) {
             return Res.status(400).json({ erro: err.message });
         }
     }
-    
-    async delete(Req: Request, Res: Response) {
+
+    async delete(Req: AuthRequest, Res: Response) {
         try {
             const id = parseInt(Req.params.id, 10);
-            const inscricoesDados = await inscricoesService.delete(id)
+            const usuarioId = Req.user?.id;
+
+            if (!usuarioId) {
+                return Res.status(401).json({ error: "USUARIO_NAO_AUTENTICADO" });
+            }
+
+            const inscricoesDados = await inscricoesService.delete(id, usuarioId)
 
             return Res.status(200).json(inscricoesDados)
 

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AlunosService from "../../services/Aluno/AlunoService.js";
 import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js";
+import { AuthRequest } from "../../middlewares/autenticadoMiddleware.js";
 
 const alunoService = new AlunosService(new AlunoPrismaRepository());
 
@@ -118,11 +119,15 @@ class AlunoController{
         try {
 
             const {id} = Req.params
-            const alunoDados = await alunoService.delete(id)
+            const user = (Req as AuthRequest).user;
+            const alunoDados = await alunoService.delete(id, user!.id)
 
             return Res.status(200).json(alunoDados)
 
         } catch (err : any) {
+            if (err.message === "AUTO_EXCLUSAO_NAO_PERMITIDA") {
+                return Res.status(403).json({ error: err.message });
+            }
             return Res.status(400).json({error : err.message})
         }
     }

@@ -93,7 +93,8 @@ class MonitoriaController{
     async create(req: Request, res: Response) {
         try {
             const dados = req.body;
-            const monitoriaCriada = await monitoriaService.create(dados);
+            const user = (req as AuthRequest).user;
+            const monitoriaCriada = await monitoriaService.create(dados, user!.id);
 
             return res.status(201).json(monitoriaCriada);
 
@@ -111,11 +112,21 @@ class MonitoriaController{
         try {
             const { id } = Req.params;
             const dados = Req.body;
+            const user = (Req as AuthRequest).user;
 
-            const monitoriaDados = await monitoriaService.update(id, dados);
+            const monitoriaDados = await monitoriaService.update(id, dados, user!.id, user!.perfil);
 
             return Res.status(200).json(monitoriaDados);
         } catch (err: any) {
+            if (err.message === "MONITORIA_INEXISTENTE") {
+                return Res.status(404).json({ error: err.message });
+            }
+            if (err.message === "MONITORIA_DE_OUTRO") {
+                return Res.status(403).json({ error: err.message });
+            }
+            if (err.message?.startsWith("ATA_NAO_PERMITIDA")) {
+                return Res.status(400).json({ error: err.message });
+            }
             if (err.message?.startsWith("HORARIO_INVALIDO")) {
                 return Res.status(400).json({ error: err.message });
             }

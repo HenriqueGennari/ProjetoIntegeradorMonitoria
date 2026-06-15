@@ -30,7 +30,7 @@ Para informações detalhadas sobre a arquitetura, regras de negócio e o histó
 ## 🛠️ Stack Tecnológica
 
 * **Backend:** [Node.js](https://nodejs.org/) com [TypeScript](https://www.typescriptlang.org/)
-* **Banco de Dados:** [PostgreSQL](https://www.postgresql.org/) usando o [Prisma ORM](https://www.prisma.io/)
+* **Banco de Dados:** [CockroachDB](https://www.cockroachlabs.com/) usando o [Prisma ORM](https://www.prisma.io/)
 * **Frontend:** HTML5, CSS3 e JavaScript.
 * **Arquitetura:** Padrão **MVC** (Model-View-Controller)
 
@@ -43,6 +43,40 @@ Para informações detalhadas sobre a arquitetura, regras de negócio e o histó
 | **Inscrição Simplicada** | Fluxo rápido para o aluno garantir a sua vaga. |
 | **Gestão de Perfil** | Controle de informações pessoais e histórico de participações. |
 | **Painel do Monitor** | Área exclusiva para criação, edição e gestão de monitorias. |
+
+---
+
+## 🎯 Estado Atual do MVP
+
+> Esta seção declara objetivamente o que está **entregue e funcionando** na versão atual do sistema, e o que está **fora do escopo** desta entrega.
+
+### ✅ Funcionalidades Entregues e Funcionando
+
+O sistema está **online e acessível** via deploy no Render. As seguintes funcionalidades estão implementadas de ponta a ponta:
+
+| Funcionalidade | Descrição | Status |
+| :--- | :--- | :---: |
+| **Autenticação** | Login e logout diferenciado para Aluno e Monitor | ✅ Funcionando |
+| **Listagem de Monitorias** | Visualização de todas as monitorias disponíveis com disciplina, data e horário | ✅ Funcionando |
+| **Inscrição em Monitoria** | Fluxo completo de inscrição do aluno em uma vaga disponível | ✅ Funcionando |
+| **Painel do Monitor** | Criação, edição e exclusão de monitorias pelo monitor responsável | ✅ Funcionando |
+| **Painel Administrativo** | Dashboard de gestão geral do sistema (`/dashboard-admin`) | ✅ Funcionando |
+| **Gestão de Perfil** | Visualização e atualização de dados pessoais do usuário | ✅ Funcionando |
+
+### ❌ O que está fora do escopo desta versão
+
+Os itens abaixo foram **identificados como oportunidades futuras**, mas não fazem parte do MVP entregue:
+
+- **Notificações automáticas:** Envio de e-mail ou push notification para confirmação de inscrição ou lembrete de monitoria.
+- **Monitorias com mais monitores** Criação de monitorias conjuntas compostas por mais de um monitor.
+- **Integração institucional:** Conexão com sistemas internos do UniCEUB (ex: matrícula, email).
+- **Recuperação de senha:** Não há fluxo de "esqueci minha senha".
+- **Controle de vagas:** O sistema não limita o número de inscrições por monitoria. Não há validação de capacidade máxima nem indicação de monitoria lotada.
+
+### 🔗 Acesso ao Sistema
+
+O sistema pode ser acessado e testado diretamente pelo deploy em produção no [Render](https://houston-education.onrender.com/pages/login.html/) 
+Para rodar localmente, siga as instruções na seção [Como Executar o Projeto](#️-como-executar-o-projeto-localmente) acima.
 
 ---
 

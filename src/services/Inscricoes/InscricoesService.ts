@@ -1,6 +1,8 @@
 import { Inscricao } from "@prisma/client";
 import type InscricoesPrismaRepository from "../../repositories/Prisma/InscricoesPrismaRepository.js";
 import MonitoriaPrismaRepository from "../../repositories/Prisma/MonitoriaPrismaRepository.js";
+import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js";
+import { eventEmmiter } from "../../utils/events/Evento.js";
 
 
 
@@ -33,14 +35,34 @@ class InscricaosService{
         return InscricaosDados;
     }
 
-    async create(dados : Inscricao) : Promise<Inscricao>{
+    async create(dados : Inscricao, usuarioId: string) : Promise<Inscricao>{
         const existeInscricao = await this._inscricaoPrismaRepository.findAlunoMonitoria(dados.alunoId, dados.monitoriaId)
-        
+
         if (existeInscricao){
             throw new Error ("INSCRICAO_JA_EXISTE")
         }
-        
+
         const dadosInscricaos = await this._inscricaoPrismaRepository.create(dados)
+
+        // buscando informações para a auditoria
+        const alunoRepository = new AlunoPrismaRepository();
+        const monitoriaRepository = new MonitoriaPrismaRepository();
+
+        const aluno = await alunoRepository.getById(dadosInscricaos.alunoId);
+        const monitoria = await monitoriaRepository.getById(dadosInscricaos.monitoriaId);
+
+        // emitindo o evento para a auditoria
+        eventEmmiter.emit("Inscricao:Criada", {
+            usuarioId,
+            inscricaoId: dadosInscricaos.id.toString(),
+            detalhes: {
+                aluno: aluno?.nome || dadosInscricaos.alunoId,
+                monitoria: monitoria?.nome_monitoria || dadosInscricaos.monitoriaId
+            }
+        });
+
+        console.log("EVENTO EMITIDO (CREATE INSCRICAO)")
+
         return dadosInscricaos;
     }
     async getById(id : number) : Promise <any>{
@@ -52,9 +74,9 @@ class InscricaosService{
         return InscricaoDados;
     }
 
-    async delete(id : number) : Promise <Inscricao>{
+    async delete(id : number, usuarioId: string) : Promise <Inscricao>{
         const inscricaoExistente = await this.getById(id)
-        
+
         const agora = new Date()
 
         if (new Date(inscricaoExistente.monitoria.inicio) <= agora){
@@ -66,6 +88,25 @@ class InscricaosService{
         if (!InscricaoDados){
             throw new Error ("Inscricao_INEXISTENTE")
         }
+
+        // buscando informações para a auditoria
+        const alunoRepository = new AlunoPrismaRepository();
+        const monitoriaRepository = new MonitoriaPrismaRepository();
+
+        const aluno = await alunoRepository.getById(InscricaoDados.alunoId);
+        const monitoria = await monitoriaRepository.getById(InscricaoDados.monitoriaId);
+
+        // emitindo o evento para a auditoria
+        eventEmmiter.emit("Inscricao:Removida", {
+            usuarioId,
+            inscricaoId: InscricaoDados.id.toString(),
+            detalhes: {
+                aluno: aluno?.nome || InscricaoDados.alunoId,
+                monitoria: monitoria?.nome_monitoria || InscricaoDados.monitoriaId
+            }
+        });
+
+        console.log("EVENTO EMITIDO (DELETE INSCRICAO)")
 
         return InscricaoDados;
     }

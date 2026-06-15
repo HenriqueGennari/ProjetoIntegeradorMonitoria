@@ -1,4 +1,5 @@
 import { getAuthHeaders } from "../utils/getAuthHeaders.js";
+import { parseJwt } from "../utils/parseJWT.js";
 
 const tabelaBody = document.querySelector("#tabelaUsuarios tbody");
 const buscaInput = document.getElementById("buscaUsuario");
@@ -23,6 +24,10 @@ const btnAbrirModalCriar = document.getElementById("btnAbrirModalCriar");
 const modalCriarUsuario = document.getElementById("modalCriarUsuario");
 const btnFecharModalCriar = document.getElementById("btnFecharModalCriar");
 const formCriarUsuario = document.getElementById("formCriarUsuario");
+
+const token = localStorage.getItem("token");
+const usuarioLogado = token ? parseJwt(token) : null;
+const idUsuarioLogado = usuarioLogado?.id || null;
 
 let usuarios = [];
 let acaoPendente = null;
@@ -101,9 +106,11 @@ function renderizarTabela() {
                         <button class="btn-editar" data-id="${u.id}" title="Editar perfil">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
+                        ${u.id !== idUsuarioLogado ? `
                         <button class="btn-excluir" data-id="${u.id}" data-acao="excluir" title="Excluir usuario">
                             <i class="fas fa-trash-alt"></i>
                         </button>
+                        ` : ""}
                     </div>
                 </td>
             </tr>

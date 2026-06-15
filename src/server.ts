@@ -5,9 +5,11 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { monitoriasCron } from "./utils/cronjob/monitoriaCron.js";
+import "./utils/listeners/Listener.js"; // registra os listeners de eventos, só preciso do import para que o listener seja carregado quando a aplicação subir
 
 
 dotenv.config();
+
 const server = express();
 
 

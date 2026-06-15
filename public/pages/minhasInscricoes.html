@@ -7,7 +7,7 @@
     <title>Minhas Inscrições - Houston Education</title>
     <link rel="shortcut icon" href="../assets/img/iconeHoustonEducation.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/styleNavMenuLateral.css?v=5">
-    <link rel="stylesheet" href="../style/minhasInscricoes.css?v=1">
+    <link rel="stylesheet" href="../style/minhasInscricoes.css?v=3">
     <link rel="stylesheet" href="../style/style.css?v=5">
     <link rel="stylesheet" href="../style/stylePopUp.css?v=5">
     <script type="module" src="../scripts/menuLateral/menuLateral.js"></script>
@@ -95,11 +95,7 @@
     <div id="overlay" class="overlay-menu"></div>
 
     <main class="inscricoes-container">
-        <div class="inscricoes-header">
-            <h1>Minhas inscrições</h1>
-        </div>
-
-        <div class="divBuscar">
+        <div class="inscricoes-filtros">
             <div class="input-busca-wrapper">
                 <img src="../assets/img/lupa.png" alt="" class="icone-lupa">
                 <input type="text" id="buscaMonitoria" placeholder="Buscar monitoria ou disciplina...">
@@ -110,9 +106,12 @@
             </select>
         </div>
 
-        <div class="inscricoes-lista" id="listaInscricoes">
-            <!-- Cards serão inseridos via JS -->
-        </div>
+        <h1 class="inscricoes-titulo">Minhas inscrições</h1>
+
+        <section class="sectionmonitorias">
+            <div class="inscricoes-lista" id="listaInscricoes">
+            </div>
+        </section>
     </main>
 
     <!-- Modal de Detalhes -->
@@ -161,7 +160,7 @@
     </div>
 
     <script type="module" src="../scripts/carregarNomeUsuario.js?v=2"></script>
-    <script type="module" src="../scripts/minhasInscricoes/minhasInscricoes.js?v=1"></script>
+    <script type="module" src="../scripts/minhasInscricoes/minhasInscricoes.js?v=2"></script>
 </body>
 
 </html>

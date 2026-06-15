@@ -1,6 +1,7 @@
 import { json } from "stream/consumers";
 import MonitoriaPrismaRepository from "../../repositories/Prisma/MonitoriaPrismaRepository.js";
 import { Monitoria } from "@prisma/client";
+import { eventEmmiter } from "../../utils/events/Evento.js";
 
 interface MonitoriaInput {
   nome_monitoria: string;
@@ -11,6 +12,7 @@ interface MonitoriaInput {
   localId: string;
   monitorId: string;
   disciplinaId: string;
+  ata?: string;
 } // preciso tirar isso daqui e colocar no model
 
 // essas funções foram criadas para resolver o problema de 3h atrasadas que ficavam as monitorias em produção
@@ -26,6 +28,8 @@ function extrairHoraBRT(date: Date): string {
     hour12: false,
   });
 }
+
+
 
 class MonitoriaService {
   constructor(private _monitoriaRepository: MonitoriaPrismaRepository) { }
@@ -64,7 +68,7 @@ class MonitoriaService {
       presentes: m.inscricoes.length,
       temChamada: m._count.inscricoes > 0,
     }));
-  }
+  } // histórico das monitorias de um monitor específico 
 
   async getHistoricoAdmin(perfil: string): Promise<any[]> {
     if (perfil !== "ADMIN") {
@@ -85,7 +89,7 @@ class MonitoriaService {
       presentes: m.inscricoes.length,
       temChamada: m._count.inscricoes > 0,
     }));
-  }
+  } // histórico de todas as monitorias 
 
   async getById(id: string): Promise<Monitoria> {
     const monitoriaDados = await this._monitoriaRepository.getById(id);
@@ -95,7 +99,7 @@ class MonitoriaService {
     }
 
     return monitoriaDados;
-  }
+  } // monitoria pelo id 
 
   async getChamadaMonitoria(monitoriaId: string, usuarioId: string, perfil: string): Promise<any[]> {
     const monitoria = await this._monitoriaRepository.getById(monitoriaId);
@@ -111,9 +115,9 @@ class MonitoriaService {
     const dadosChamada = await this._monitoriaRepository.getChamadaMonitoria(monitoriaId);
 
     return dadosChamada;
-  }
+  } // chamada de uma monitoria, pega quem são os alunos inscritos
 
-  async create(dados: MonitoriaInput): Promise<Monitoria> {
+  async create(dados: MonitoriaInput, usuarioId: string): Promise<Monitoria> {
     const inicio = criarDateBRT(dados.data, dados.hora_inicio);
     const fim = criarDateBRT(dados.data, dados.hora_fim);
 
@@ -121,7 +125,7 @@ class MonitoriaService {
       throw new Error("HORARIO_INVALIDO: O horário de início deve ser anterior ao horário de fim.");
     }
 
-    
+
     const dadosFormatados: any = {
       nome_monitoria: dados.nome_monitoria,
       inicio,
@@ -143,22 +147,51 @@ class MonitoriaService {
 
     const monitoriaNova = await this._monitoriaRepository.create(dadosFormatados)
 
+    // emitindo o evento para a auditoria
+    const eventoCreateMonitoria = eventEmmiter.emit("Monitoria:Criada", {
+      usuarioId,
+      monitoriaId: monitoriaNova.id,
+      monitoria: {
+        nome: monitoriaNova.nome_monitoria,
+        data: monitoriaNova.inicio.toISOString(),
+        monitorId: monitoriaNova.monitorId,
+      },
+    });
+
+    console.log("Alguém ouviu?", eventoCreateMonitoria)
+    console.log("EVENTO EMITIDO ( CREATE MONITORIA) ")
 
     return monitoriaNova;
-  }
+  } // cria monitoria
 
-  async update(id: string, dados: Partial<MonitoriaInput>): Promise<Monitoria> {
+  async update(id: string, dados: Partial<MonitoriaInput>, usuarioId: string, perfil: string): Promise<Monitoria> {
     const monitoriaAtual = await this._monitoriaRepository.getById(id);
 
+    //monitoria existe
     if (!monitoriaAtual) {
       throw new Error("MONITORIA_INEXISTENTE");
     }
 
+    // permissão de edição
+    if (perfil !== "ADMIN" && monitoriaAtual.monitorId !== usuarioId) {
+      throw new Error("MONITORIA_DE_OUTRO");
+    }
+
+    //vendo se existe ata
+    if (dados.ata !== undefined) {
+      const agora = new Date();
+
+      if (agora < monitoriaAtual.inicio) {
+        throw new Error("ATA_NAO_PERMITIDA: A ata só pode ser preenchida após o início da monitoria");
+      }
+    }
+
+    // lógica para atualização de horário e dia
     const dataAtual = monitoriaAtual.inicio.toISOString().split("T")[0];
     const horaInicioAtual = extrairHoraBRT(monitoriaAtual.inicio);
     const horaFimAtual = extrairHoraBRT(monitoriaAtual.fim);
 
-    const dataString = dados.data ?? dataAtual;
+    const dataString = dados.data ?? dataAtual; // o campo de data está vindo? se não, continue usando o do banco
     const horaInicioString = dados.hora_inicio ?? horaInicioAtual;
     const horaFimString = dados.hora_fim ?? horaFimAtual;
 
@@ -169,11 +202,16 @@ class MonitoriaService {
       throw new Error("HORARIO_INVALIDO: O horário de início deve ser anterior ao horário de fim.");
     }
 
-    const dadosAtualizados: any = {
+    const dadosAtualizados: any = { // criei esse objeto logo aqui para poder atribuir a ele o resto das informações de update nos ifs
       ...dados, 
       inicio,
       fim,
     };
+
+    // deleto esses campos pois eles são apenas auxíliares para os campos reais ( inicio e fim)
+    delete dadosAtualizados.data;
+    delete dadosAtualizados.hora_inicio;
+    delete dadosAtualizados.hora_fim;
 
     if (dados.disciplinaId) {
       dadosAtualizados.disciplinaId = parseInt(dados.disciplinaId, 10);
@@ -183,12 +221,10 @@ class MonitoriaService {
       dadosAtualizados.localId = parseInt(dados.localId, 10);
     }
 
-    delete dadosAtualizados.data;
-    delete dadosAtualizados.hora_inicio;
-    delete dadosAtualizados.hora_fim;
-
+    // checagem de conflito de monitoria
     const conflito = await this._monitoriaRepository.conflitoHorario(dadosAtualizados.localId, dadosAtualizados.inicio, dadosAtualizados.fim, id)
 
+    
     if (conflito){
       throw new Error ("CONFLITO_MONITORIA_EXISTENTE")
     }
@@ -203,7 +239,7 @@ class MonitoriaService {
     }
 
     return dadosMonitoria;
-  }
+  } // atualiza monitoria
 
   async delete(id: string): Promise<Monitoria> {
     const monitoriaDados = await this._monitoriaRepository.delete(id);
@@ -213,7 +249,7 @@ class MonitoriaService {
     }
 
     return monitoriaDados;
-  }
+  } // deleta monitoria
 }
 
 export default MonitoriaService;

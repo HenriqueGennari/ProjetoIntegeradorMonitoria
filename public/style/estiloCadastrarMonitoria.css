@@ -97,6 +97,20 @@ body {
     box-shadow: 0 0 0 3px rgba(2, 64, 89, 0.1);
 }
 
+.campo input.input-erro,
+.campo select.input-erro,
+.campo textarea.input-erro {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.campo input.input-erro:focus,
+.campo select.input-erro:focus,
+.campo textarea.input-erro:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
 .campo select {
     cursor: pointer;
     appearance: none;
@@ -105,6 +119,13 @@ body {
     background-position: right 12px center;
     background-size: 16px;
     padding-right: 38px;
+}
+
+.campo select:disabled {
+    cursor: not-allowed;
+    background-color: #f1f5f9;
+    color: #64748b;
+    opacity: 0.8;
 }
 
 .campo textarea {

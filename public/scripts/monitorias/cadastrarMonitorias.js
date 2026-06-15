@@ -13,21 +13,39 @@ form.addEventListener("submit", async (evento)=>{
     const dadosForm = new FormData(form)
     const dados = Object.fromEntries(dadosForm)
 
-    const camposFaltantes = [];
-    if(!dados.nome_monitoria) camposFaltantes.push("Nome da monitoria");
-    if(!dados.data) camposFaltantes.push("Data");
-    if(!dados.hora_inicio) camposFaltantes.push("Hora de início");
-    if(!dados.hora_fim) camposFaltantes.push("Hora de fim");
-    if(!dados.disciplinaId) camposFaltantes.push("Disciplina");
-    if(!dados.monitorId) camposFaltantes.push("Monitor");
+    // limpa erros anteriores
+    form.querySelectorAll(".input-erro").forEach(el => el.classList.remove("input-erro"));
+    mensagem.textContent = "";
+
+    const camposObrigatorios = [
+        { nome: "nome_monitoria", seletor: "#nome_monitoria" },
+        { nome: "data", seletor: "#data" },
+        { nome: "hora_inicio", seletor: "#hora_inicio" },
+        { nome: "hora_fim", seletor: "#hora_fim" },
+        { nome: "disciplinaId", seletor: "#disciplinas" },
+        { nome: "monitorId", seletor: "#monitores" },
+    ];
+
+    let camposInvalidos = false;
+
+    camposObrigatorios.forEach(campo => {
+        const elemento = document.querySelector(campo.seletor);
+        if (!dados[campo.nome]) {
+            elemento?.classList.add("input-erro");
+            camposInvalidos = true;
+        }
+    });
 
     const localId = document.getElementById("local-id").value;
-    if(!localId) camposFaltantes.push("Local (selecione um válido da lista)");
-    else dados.localId = localId;
+    const selectLocal = document.getElementById("locais");
+    if(!localId){
+        selectLocal?.classList.add("input-erro");
+        camposInvalidos = true;
+    } else {
+        dados.localId = localId;
+    }
 
-    if(camposFaltantes.length > 0){
-        mensagem.textContent = "Preencha: " + camposFaltantes.join(", ");
-        mensagem.style.color = "red";
+    if(camposInvalidos){
         return;
     }
 
@@ -35,8 +53,8 @@ form.addEventListener("submit", async (evento)=>{
     if(dados.monitorId !== idUsuario && perfilUsuario !== "ADMIN"){
         mensagem.textContent = "Você não pode criar monitorias para outros!"
         return;
-    } // validação para que um monitor só crie monitorias para ele mesmo 
-        
+    } // validação para que um monitor só crie monitorias para ele mesmo
+
     try {
         const response = await fetch("/monitorias", {
             method : "POST",
@@ -65,7 +83,7 @@ form.addEventListener("submit", async (evento)=>{
 
         const popup = document.getElementById("popupSucesso");
         popup.classList.remove("hidden");
-        form.reset(); // limpar os inputs 
+        form.reset(); // limpar os inputs
 
 
     } catch (error) {
