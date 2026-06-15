@@ -1,6 +1,0 @@
-
-> monitoria@1.0.0 start
-> node dist/server.js
-
-[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
-Server rodando na porta 3000
