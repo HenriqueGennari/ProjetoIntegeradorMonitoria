@@ -75,8 +75,8 @@ Os itens abaixo foram **identificados como oportunidades futuras**, mas não faz
 
 ### 🔗 Acesso ao Sistema
 
-O sistema pode ser acessado e testado diretamente pelo deploy em produção no [Render](https://houston-education.onrender.com/pages/login.html/) 
-Para rodar localmente, siga as instruções na seção [Como Executar o Projeto](#️-como-executar-o-projeto-localmente) acima.
+O sistema pode ser acessado e testado diretamente pelo deploy em produção no [Render](https://houston-education.onrender.com/pages/login.html) 
+Para rodar localmente, siga as instruções na seção [Como Executar o Projeto](#️-como-executar-o-projeto-localmente) abaixo.
 
 ---
 
