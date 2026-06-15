@@ -12,6 +12,7 @@
     "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --ext ts --exec \"tsx src/server.ts\"",
+    "test:e2e": "mocha --require tsx tests/e2e/**/*.test.ts --timeout 30000",
     "k6:smoke": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/smoke/smoke-login.js",
     "k6:smoke:prod": "k6 run -e BASE_URL=https://projetointegeradormonitoria.onrender.com tests/k6/smoke/smoke-login.js",
     "k6:smoke:monitorias": "k6 run -e BASE_URL=http://localhost:3000 tests/k6/smoke/smoke-monitorias.js",
@@ -54,10 +55,15 @@
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^11.12.0",
     "@types/k6": "^2.0.0",
+    "@types/mocha": "^10.0.10",
     "@types/node-cron": "^3.0.11",
+    "@types/selenium-webdriver": "^4.35.6",
+    "chromedriver": "^149.0.3",
+    "mocha": "^11.7.6",
     "nodemon": "^3.1.10",
     "prisma": "^6.16.2",
     "prisma-erd-generator": "^2.4.2",
+    "selenium-webdriver": "^4.44.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.3.3"
