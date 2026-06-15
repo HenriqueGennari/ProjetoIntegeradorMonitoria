@@ -52,11 +52,18 @@ jobs:
 
       - name: Iniciar CockroachDB
         run: |
-          docker run -d --name cockroach-ci -p 26257:26257 -p 8080:8080 cockroachdb/cockroach:latest-v24.3 start-single-node --insecure --store=type=mem,size=0.25 --listen-addr=0.0.0.0:26257 --http-addr=0.0.0.0:8080
-          until docker exec cockroach-ci cockroach sql --insecure -e "SELECT 1" > /dev/null 2>&1; do
-            echo "Aguardando CockroachDB ficar pronto..."
+          docker run -d --name cockroach-ci -p 26257:26257 -p 8080:8080 cockroachdb/cockroach:v25.4.10 start-single-node --insecure --store=type=mem,size=0.25
+          for i in {1..60}; do
+            if docker exec cockroach-ci cockroach sql --insecure -e "SELECT 1" > /dev/null 2>&1; then
+              echo "CockroachDB pronto!"
+              exit 0
+            fi
+            echo "Aguardando CockroachDB ficar pronto... (tentativa $i/60)"
             sleep 2
           done
+          echo "CockroachDB não ficou pronto a tempo. Logs do container:"
+          docker logs cockroach-ci
+          exit 1
 
       - name: Build da aplicação
         run: npm run build
@@ -97,3 +104,4 @@ jobs:
           path: tests/k6/smoke/smoke-monitorias.js
         env:
           BASE_URL: http://localhost:3000
+  
