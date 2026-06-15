@@ -56,14 +56,25 @@ class AlunoPrismaRepository {
         return aluno;
     }
 
-    async getById(id: string): Promise<AlunoWithPerfil | null> {
+    async getById(id: string): Promise<any | null> {
         const aluno = await prisma.aluno.findFirst({
             where: {
                 id: id,
                 deletedAt: null
             },
-            include: {
-                perfil: true
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
+                perfil: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
+                }
             }
         });
 

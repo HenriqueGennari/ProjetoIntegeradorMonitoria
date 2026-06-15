@@ -214,11 +214,23 @@ class MonitoriaPrismaRepository {
     return dadosMonitoria;
   }
 
-  async getById(id: string): Promise<Monitoria | null> {
+  async getById(id: string): Promise<any | null> {
     const monitoriaDados = await prisma.monitoria.findFirst({
       where: {
         id: id,
       },
+      select: {
+        id: true,
+        nome_monitoria: true,
+        descricao: true,
+        inicio: true,
+        fim: true,
+        monitorId: true,
+        disciplinaId: true,
+        localId: true,
+        ata: true,
+        expiredAt: true
+      }
     });
 
     return monitoriaDados;

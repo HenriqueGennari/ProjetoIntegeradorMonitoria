@@ -2,6 +2,7 @@ import { getAuthHeaders } from "../utils/getAuthHeaders.js";
 
 const tbody = document.getElementById("corpoTabelaAuditoria");
 const buscaInput = document.getElementById("buscaAuditoria");
+const filtroDataInput = document.getElementById("filtroDataAuditoria");
 
 let registrosCache = [];
 
@@ -15,6 +16,13 @@ function formatarData(dataString) {
         hour: "2-digit",
         minute: "2-digit",
     });
+}
+
+function formatarDataISO(data) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
 }
 
 function formatarDetalhes(detalhes) {
@@ -31,6 +39,10 @@ function formatarDetalhes(detalhes) {
         // detalhes de login
         if (detalhes.email) partes.push(`Email: ${detalhes.email}`);
         if (detalhes.matricula) partes.push(`Matrícula: ${detalhes.matricula}`);
+
+        // detalhes de inscrição/desinscrição
+        if (detalhes.aluno) partes.push(`Aluno: ${detalhes.aluno}`);
+        if (detalhes.monitoria) partes.push(`Monitoria: ${detalhes.monitoria}`);
 
         return partes.length ? partes.join(" | ") : JSON.stringify(detalhes);
     }
@@ -53,7 +65,7 @@ async function carregarAuditoria() {
 
         const registros = await response.json();
         registrosCache = registros;
-        renderizarTabela(registros);
+        filtrarRegistros();
     } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" class="sem-dados">Erro: ${err.message}</td></tr>`;
     }
@@ -79,6 +91,7 @@ function renderizarTabela(registros) {
 
 function filtrarRegistros() {
     const termo = buscaInput.value.toLowerCase();
+    const dataFiltro = filtroDataInput.value;
 
     const filtrados = registrosCache.filter((registro) => {
         const nomeUsuario = (registro.usuario?.nome || "").toLowerCase();
@@ -86,15 +99,28 @@ function filtrarRegistros() {
         const entidade = (registro.entidade || "").toLowerCase();
         const entidadeId = (registro.entidadeId || "").toLowerCase();
 
-        return nomeUsuario.includes(termo) ||
+        const correspondeTermo = nomeUsuario.includes(termo) ||
             acao.includes(termo) ||
             entidade.includes(termo) ||
             entidadeId.includes(termo);
+
+        let correspondeData = true;
+        if (dataFiltro) {
+            const dataRegistro = new Date(registro.criadoEm);
+            const dataRegistroStr = formatarDataISO(dataRegistro);
+            correspondeData = dataRegistroStr === dataFiltro;
+        }
+
+        return correspondeTermo && correspondeData;
     });
 
     renderizarTabela(filtrados);
 }
 
+// Define a data atual como padrão no filtro
+filtroDataInput.value = formatarDataISO(new Date());
+
 buscaInput?.addEventListener("input", filtrarRegistros);
+filtroDataInput?.addEventListener("change", filtrarRegistros);
 
 carregarAuditoria();

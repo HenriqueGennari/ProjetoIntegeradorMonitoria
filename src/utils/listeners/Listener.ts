@@ -38,3 +38,39 @@ eventEmmiter.on("Aluno:Login", async (payload) => {
 
     console.log("[Auditoria] Evento Aluno:Login recebido");
 });
+
+eventEmmiter.on("Inscricao:Criada", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: "CRIAR_INSCRICAO",
+            entidade: "Inscricao",
+            entidadeId: payload.inscricaoId,
+            detalhes: payload.detalhes // alunoId e monitoriaId
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Inscricao:Criada recebido");
+});
+
+eventEmmiter.on("Inscricao:Removida", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: "REMOVER_INSCRICAO",
+            entidade: "Inscricao",
+            entidadeId: payload.inscricaoId,
+            detalhes: payload.detalhes // alunoId e monitoriaId
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Inscricao:Removida recebido");
+});
