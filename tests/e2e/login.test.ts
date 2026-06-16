@@ -1,15 +1,20 @@
-
 import { describe, it, before, after } from "mocha";
 import assert from "assert";
 import { Builder, By, until } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import path from "path";
 
+import {
+  QASE_CASE_MAP,
+  createQaseRun,
+  reportQaseResult,
+  completeQaseRun,
+} from "./utils/qase-reporter.js";
+
 describe("Login E2E", function () {
   let driver: any;
 
   before(async function () {
-    // Cria um objeto de opções do Chrome.
     const options = new chrome.Options();
 
     // Descomente a linha abaixo para rodar sem abrir a janela do navegador.
@@ -19,8 +24,13 @@ describe("Login E2E", function () {
     options.addArguments("--disable-dev-shm-usage");
     options.addArguments("--window-size=1920,1080");
 
-    // Monta o caminho absoluto para o chromedriver instalado pelo npm.
-    // path.resolve junta o diretório atual com o caminho relativo do executável.
+    // Desativa avisos do Chrome sobre senhas fracas/vazadas,
+    // gerenciador de senhas e diálogos de autofill.
+    options.addArguments("--disable-features=PasswordManager,PasswordCheck,Autofill");
+    options.addArguments("--disable-blink-features=PasswordCheck");
+    options.addArguments("--disable-save-password-bubble");
+    options.addArguments("--disable-popup-blocking");
+
     const chromedriverPath = path.resolve(
       process.cwd(),
       "node_modules",
@@ -30,109 +40,128 @@ describe("Login E2E", function () {
       "chromedriver.exe"
     );
 
-    // ServiceBuilder diz explicitamente ao Selenium qual executável usar.
-    // Isso evita que o Selenium fique procurando ou baixando outra versão.
     const service = new chrome.ServiceBuilder(chromedriverPath);
 
-    // Builder monta o driver.
-    // forBrowser("chrome") -> diz que vamos usar o Chrome.
-    // setChromeOptions(options) -> aplica as configurações definidas acima.
-    // setChromeService(service) -> usa o chromedriver específico que instalamos.
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
       .setChromeService(service)
       .build();
+
+    // Cria um test run no qase.io antes de executar os testes.
+    await createQaseRun(`Login E2E - ${new Date().toISOString()}`);
   });
 
   after(async function () {
     await driver.quit();
+
+    // Finaliza o test run no qase.io após todos os testes.
+    await completeQaseRun();
   });
 
-  // Caso de teste 1: login com credenciais válidas.
+  /**
+   * Executa um cenário de teste e reporta o resultado automaticamente para o qase.io.
+   *
+   * @param caseId - ID do caso de teste no qase.io
+   * @param testFn - função assíncrona com o cenário de teste
+   */
+  async function runTest(
+    caseId: number,
+    testFn: () => Promise<void>
+  ): Promise<void> {
+    const start = Date.now();
+
+    try {
+      await testFn();
+
+      const duration = Date.now() - start;
+      await reportQaseResult(caseId, "passed", "Teste passou", duration);
+    } catch (error) {
+      const duration = Date.now() - start;
+      const message = error instanceof Error ? error.message : String(error);
+
+      await reportQaseResult(caseId, "failed", message, duration);
+
+      // Re-lança o erro para que o Mocha também conte o teste como falho.
+      throw error;
+    }
+  }
+
   it("deve fazer login com sucesso como aluno", async function () {
+    await runTest(QASE_CASE_MAP.LOGIN_SUCESSO_ALUNO, async () => {
+      await driver.get("http://localhost:3000/pages/login.html");
 
-    await driver.get("http://localhost:3000/pages/login.html");
+      await driver.executeScript("localStorage.clear();");
+      await driver.manage().deleteAllCookies();
 
-    await driver.executeScript("localStorage.clear();");
-    await driver.manage().deleteAllCookies();
+      await driver
+        .findElement(By.css("input[name='email']"))
+        .sendKeys("joao@email.com");
 
-    await driver
-      .findElement(By.css("input[name='email']"))
-      .sendKeys("joao@email.com");
+      await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("123456");
+      await driver.findElement(By.css("#btnLogin")).click();
 
-    await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("123456");
+      await driver.wait(until.urlContains("/pages/home.html"), 10000);
 
-    await driver.findElement(By.css("#btnLogin")).click();
+      const token = await driver.executeScript(
+        "return localStorage.getItem('token');"
+      );
 
-    // O Selenium fica verificando a URL até ela conter esse texto ou estourar o timeout (10s).
-    await driver.wait(until.urlContains("/pages/home.html"), 10000);
-
-    // 6. Executa JavaScript dentro do navegador para ler o localStorage.
-    // executeScript("return localStorage.getItem('token')") -> roda JS na página e retorna o valor.
-    const token = await driver.executeScript(
-      "return localStorage.getItem('token');"
-    );
-
-    // 7. Verifica se o token existe.
-    // assert.ok(token, "...") -> falha o teste se 'token' for null/undefined/vazio.
-    assert.ok(token, "Token não foi salvo no localStorage");
+      assert.ok(token, "Token não foi salvo no localStorage");
+    });
   });
 
-  // Caso de teste 2: login com senha incorreta.
   it("deve exibir mensagem de erro para senha incorreta", async function () {
-    await driver.get("http://localhost:3000/pages/login.html");
+    await runTest(QASE_CASE_MAP.LOGIN_CREDENCIAIS_INVALIDAS, async () => {
+      await driver.get("http://localhost:3000/pages/login.html");
 
-    await driver.executeScript("localStorage.clear();");
-    await driver.manage().deleteAllCookies();
+      await driver.executeScript("localStorage.clear();");
+      await driver.manage().deleteAllCookies();
 
-    await driver
-      .findElement(By.css("input[name='email']"))
-      .sendKeys("joao@email.com");
-    await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("senhaErrada");
-    await driver.findElement(By.css("#btnLogin")).click();
+      await driver
+        .findElement(By.css("input[name='email']"))
+        .sendKeys("joao@email.com");
+      await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("senhaErrada");
+      await driver.findElement(By.css("#btnLogin")).click();
 
-    // Espera o elemento de mensagem existir no DOM.
-    const mensagem = await driver.wait(
-      until.elementLocated(By.css("#mensagem")),
-      10000
-    );
+      const mensagem = await driver.wait(
+        until.elementLocated(By.css("#mensagem")),
+        10000
+      );
 
-    // Espera o texto do elemento ser preenchido (não ficar vazio).
-    await driver.wait(async () => {
+      await driver.wait(async () => {
+        const texto = await mensagem.getText();
+        return texto.length > 0;
+      }, 10000);
+
       const texto = await mensagem.getText();
-      return texto.length > 0;
-    }, 10000);
-
-    // getText() retorna o texto visível do elemento.
-    const texto = await mensagem.getText();
-
-    // Verifica se o texto é exatamente o esperado.
-    assert.strictEqual(texto, "Email ou senha incorretos!");
+      assert.strictEqual(texto, "Email ou senha incorretos!");
+    });
   });
 
-  // Caso de teste 3: login com campos vazios.
   it("deve exibir mensagem de erro para campos vazios", async function () {
-    await driver.get("http://localhost:3000/pages/login.html");
+    await runTest(QASE_CASE_MAP.LOGIN_CAMPOS_VAZIOS, async () => {
+      await driver.get("http://localhost:3000/pages/login.html");
 
-    await driver.executeScript("localStorage.clear();");
-    await driver.manage().deleteAllCookies();
+      await driver.executeScript("localStorage.clear();");
+      await driver.manage().deleteAllCookies();
 
-    await driver.findElement(By.css("input[name='email']")).sendKeys("");
-    await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("");
-    await driver.findElement(By.css("#btnLogin")).click();
+      await driver.findElement(By.css("input[name='email']")).sendKeys("");
+      await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("");
+      await driver.findElement(By.css("#btnLogin")).click();
 
-    const mensagem = await driver.wait(
-      until.elementLocated(By.css("#mensagem")),
-      10000
-    );
+      const mensagem = await driver.wait(
+        until.elementLocated(By.css("#mensagem")),
+        10000
+      );
 
-    await driver.wait(async () => {
+      await driver.wait(async () => {
+        const texto = await mensagem.getText();
+        return texto.length > 0;
+      }, 10000);
+
       const texto = await mensagem.getText();
-      return texto.length > 0;
-    }, 10000);
-
-    const texto = await mensagem.getText();
-    assert.strictEqual(texto, "Preencha todos os campos!");
+      assert.strictEqual(texto, "Preencha todos os campos!");
+    });
   });
 });
