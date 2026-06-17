@@ -18,6 +18,21 @@ async function carregarMonitores(){
             select.appendChild(option);
             select.value = payload.id;
             select.disabled = true;
+
+            // Campos disabled não são enviados no FormData, então criamos um input hidden
+            // para garantir que o backend receba o monitorId no submit.
+            const form = select.closest("form");
+            if (form) {
+                let hiddenInput = form.querySelector('input[type="hidden"][name="monitorId"]');
+                if (!hiddenInput) {
+                    hiddenInput = document.createElement("input");
+                    hiddenInput.type = "hidden";
+                    hiddenInput.name = "monitorId";
+                    form.appendChild(hiddenInput);
+                }
+                hiddenInput.value = payload.id;
+            }
+
             return;
         }
     }
