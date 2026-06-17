@@ -25,15 +25,51 @@ function formatarDataISO(data) {
     return `${ano}-${mes}-${dia}`;
 }
 
+const nomesCampos = {
+    nome: "Nome",
+    nome_monitoria: "Nome da Monitoria",
+    email: "Email",
+    matricula: "Matrícula",
+    monitorId: "Monitor",
+    disciplinaId: "Disciplina",
+    localId: "Local",
+    descricao: "Descrição",
+    ata: "Ata",
+    inicio: "Início",
+    fim: "Fim"
+};
+
+function formatarValorCampo(valor) {
+    if (valor === null || valor === undefined) return "-";
+
+    // detecta string no formato ISO (com ou sem Z)
+    if (typeof valor === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/.test(valor)) {
+        return formatarData(valor);
+    }
+
+    return String(valor);
+}
+
 function formatarDetalhes(detalhes) {
     if (!detalhes) return "-";
 
     if (typeof detalhes === "object") {
         const partes = [];
 
+        // detalhes de atualização (array de alterações)
+        if (Array.isArray(detalhes.alteracoes)) {
+            const alteracoesFormatadas = detalhes.alteracoes.map((alt) => {
+                const nomeCampo = nomesCampos[alt.campo] || alt.campo;
+                const antes = formatarValorCampo(alt.antes);
+                const depois = formatarValorCampo(alt.depois);
+                return `${nomeCampo}: ${antes} → ${depois}`;
+            });
+            return alteracoesFormatadas.join(" | ");
+        }
+
         // detalhes de criação de monitoria
         if (detalhes.nome) partes.push(`Nome: ${detalhes.nome}`);
-        if (detalhes.data) partes.push(`Data: ${new Date(detalhes.data).toLocaleString("pt-BR")}`);
+        if (detalhes.data) partes.push(`Data: ${formatarData(detalhes.data)}`);
         if (detalhes.monitorId) partes.push(`Monitor: ${detalhes.monitorId}`);
 
         // detalhes de login

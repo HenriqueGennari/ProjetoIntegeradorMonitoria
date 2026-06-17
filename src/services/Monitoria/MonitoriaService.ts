@@ -159,9 +159,6 @@ class MonitoriaService {
       },
     });
 
-    console.log("Alguém ouviu?", eventoCreateMonitoria)
-    console.log("EVENTO EMITIDO ( CREATE MONITORIA) ")
-
     return monitoriaNova;
   } // cria monitoria
 
@@ -237,6 +234,61 @@ class MonitoriaService {
 
     if (!dadosMonitoria) {
       throw new Error("ERRO_AO_ATUALIZAR");
+    }
+
+    // auditoria
+    const camposParaComparar = [
+      "nome_monitoria",
+      "descricao",
+      "monitorId",
+      "disciplinaId",
+      "localId",
+      "ata"
+    ] as const;
+
+    const alteracoes = [];
+
+    for (const campo of camposParaComparar) {
+      const valorAntes = monitoriaAtual[campo];
+      const valorDepois = dadosMonitoria[campo];
+
+      if (valorAntes !== valorDepois) {
+        alteracoes.push({
+          campo,
+          antes: valorAntes,
+          depois: valorDepois
+        });
+      }
+    }
+
+    // é necessário comparar usando o toIsoString os campos de hora de início e de fim separadamente, pq usando o tipo Date, a comparação !== sempre retornaria true mesmo que eu não altere a data
+
+    if (monitoriaAtual.inicio.toISOString() !== dadosMonitoria.inicio.toISOString()) {
+      alteracoes.push({
+        campo: "inicio",
+        antes: monitoriaAtual.inicio.toISOString(),
+        depois: dadosMonitoria.inicio.toISOString()
+      });
+    }
+
+    if (monitoriaAtual.fim.toISOString() !== dadosMonitoria.fim.toISOString()) {
+      alteracoes.push({
+        campo: "fim",
+        antes: monitoriaAtual.fim.toISOString(),
+        depois: dadosMonitoria.fim.toISOString()
+      });
+    }
+
+    if (alteracoes.length > 0) {
+      eventEmmiter.emit("Monitoria:Atualizada", {
+        usuarioId,
+        acao: "ATUALIZAÇÃO",
+        entidade: "Monitoria",
+        entidadeId: id,
+        detalhes: {
+          alteracoes
+        }
+      });
     }
 
     return dadosMonitoria;

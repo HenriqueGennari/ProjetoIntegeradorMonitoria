@@ -1,6 +1,8 @@
 import { Aluno } from "@prisma/client";
 import type AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js";
 import bcrypt from  "bcrypt";
+import { eventEmmiter } from "../../utils/events/Evento.js";
+import { allowedNodeEnvironmentFlags } from "process";
 
 
 class AlunosService{
@@ -49,7 +51,13 @@ class AlunosService{
 
     
     async update(id : string, dados : Aluno) : Promise <Aluno>{
-        
+
+        const alunoAntes = await this._alunoPrismaRepository.getById(id);
+
+        if (!alunoAntes){
+            throw new Error ("ALUNO_INEXISTENTE")
+        }
+
         if (dados.nome !== undefined && dados.nome.trim() === "") {
             throw new Error ("NOME_OBRIGATORIO")
         }
@@ -76,6 +84,36 @@ class AlunosService{
             throw new Error ("ALUNO_INEXISTENTE")
         }
 
+        // auditoria
+        const camposParaComparar = ["nome", "email", "matricula"] as const;
+        const alteracoes = [];
+        
+        for (const campo of camposParaComparar) {
+            const valorAntes = alunoAntes[campo]; //houston, por exemplo. Se não vier uma alteração, viria: houston -> valor não alterado
+            const valorDepois = alunoDados[campo]; // houston1, por exemplo. Se não vier uma alteração, viria: houston -> valor também não foi alterado mesmo após update
+
+            if (valorAntes !== valorDepois) {
+                alteracoes.push({
+                    campo,
+                    antes: valorAntes,
+                    depois: valorDepois
+
+                    //exemplo de como fica o log:  campo: nome, antes: houston, depois: houston1
+                });
+            }
+        }
+
+        if (alteracoes.length > 0) {
+            eventEmmiter.emit("Aluno:Atualizado", {
+                usuarioId : id,
+                acao : "ATUALIZAÇÃO PELO USUÁRIO",
+                entidade : "Aluno",
+                entidadeId : id,
+                detalhes : {
+                    alteracoes
+                }
+            })
+        }
 
         return alunoDados;
     }

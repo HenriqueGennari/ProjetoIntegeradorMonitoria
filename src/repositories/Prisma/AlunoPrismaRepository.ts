@@ -1,15 +1,9 @@
-import { PrismaClient, Prisma, Aluno } from "@prisma/client";
+import { PrismaClient, Aluno } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const alunoWithPerfil = Prisma.validator<Prisma.AlunoDefaultArgs>()({
-    include: { perfil: true }
-});
-
-type AlunoWithPerfil = Prisma.AlunoGetPayload<typeof alunoWithPerfil>;
-
 class AlunoPrismaRepository {
-    async getAll(perfilNome?: string, skip?: number, take?: number): Promise<AlunoWithPerfil[]> {
+    async getAll(perfilNome?: string, skip?: number, take?: number): Promise<any[]> {
         const alunos = await prisma.aluno.findMany({
             where: {
                 deletedAt: null,
@@ -19,8 +13,12 @@ class AlunoPrismaRepository {
                     }
                 } : {})
             },
-            include: {
-                perfil: true
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
             },
             skip: skip || 0,
             take: take || 50
@@ -45,11 +43,6 @@ class AlunoPrismaRepository {
                 matricula: true,
                 senha: true,
                 perfilId: true,
-                perfil: {
-                    select: {
-                        nome: true
-                    }
-                }
             }
         });
 
@@ -68,42 +61,57 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
-                perfil: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        descricao: true
-                    }
-                }
             }
         });
 
         return aluno;
     }
-    async create(data : Aluno) : Promise <Aluno>{
-       
+    async create(data : Aluno) : Promise <any>{
+
         const novoAluno = await prisma.aluno.create({
-            data
+            data,
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
+            }
         })
 
         return novoAluno;
     }
 
 
-    async update(id : string, data : Aluno) : Promise <Aluno | null>{
+    async update(id : string, data : Aluno) : Promise <any | null>{
         const alunoAtualizado = await prisma.aluno.update({
-            data, where : {
+            data,
+            where : {
                 id : id
+            },
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
             }
         })
-        
+
         return alunoAtualizado;
-        
+
     }
-    async updateUsuarioByAdmin(id: string, perfilId: number): Promise<Aluno | null> {
+    async updateUsuarioByAdmin(id: string, perfilId: number): Promise<any | null> {
         const alunoAtualizado = await prisma.aluno.update({
             data: { perfilId },
-            where: { id }
+            where: { id },
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
+            }
         });
 
         return alunoAtualizado;
@@ -123,10 +131,17 @@ class AlunoPrismaRepository {
 
         return alunoAtualizado;
     }
-    async delete(id: string): Promise<Aluno> {
+    async delete(id: string): Promise<any> {
         const alunoApagado = await prisma.aluno.update({
             where: { id },
-            data: { deletedAt: new Date() }
+            data: { deletedAt: new Date() },
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+                matricula: true,
+                perfilId: true,
+            }
         });
 
         return alunoApagado;

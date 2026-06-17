@@ -21,6 +21,24 @@ eventEmmiter.on("Monitoria:Criada", async (payload) => {
     console.log("[Auditoria] Evento Monitoria:Criada recebido");
 });
 
+eventEmmiter.on("Monitoria:Atualizada", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: payload.acao,
+            entidade: payload.entidade,
+            entidadeId: payload.entidadeId,
+            detalhes: payload.detalhes // as alterações que mudaram
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Monitoria:Atualizada recebido");
+});
+
 eventEmmiter.on("Aluno:Login", async (payload) => {
     try {
         const dadosAuditoria = {
@@ -37,6 +55,24 @@ eventEmmiter.on("Aluno:Login", async (payload) => {
     }
 
     console.log("[Auditoria] Evento Aluno:Login recebido");
+});
+
+eventEmmiter.on("Aluno:Atualizado", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: payload.acao,
+            entidade: payload.entidade,
+            entidadeId: payload.entidadeId,
+            detalhes: payload.detalhes // as alterações que mudaram
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Aluno:Update recebido");
 });
 
 eventEmmiter.on("Inscricao:Criada", async (payload) => {
