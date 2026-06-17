@@ -18,7 +18,7 @@ export default function () {
     `${BASE_URL}/login`,
     JSON.stringify({ //user do seed
       email: "joao@email.com",
-      senha: "123456",
+      senha: "J414!",
     }),
     {
       headers: { "Content-Type": "application/json" },
