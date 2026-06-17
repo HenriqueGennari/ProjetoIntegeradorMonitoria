@@ -42,7 +42,8 @@ async function main() {
 
   // 2. Alunos
   const adminSenhaHash = await adminPasswordB64();
-  const defaultSenhaHash = await bcrypt.hash("123456", 10);
+  const pauloSenhaHash = await bcrypt.hash("P15l4!", 10);
+  const joaoSenhaHash = await bcrypt.hash("J414!", 10);
 
   const alunos = [
     {
@@ -55,24 +56,23 @@ async function main() {
     {
       nome: "Monitor Paulo",
       email: "paulo@email.com",
-      senha: defaultSenhaHash,
+      senha: pauloSenhaHash,
       matricula: "2024002",
       perfilId: 2,
     },
     {
       nome: "João",
       email: "joao@email.com",
-      senha: defaultSenhaHash,
+      senha: joaoSenhaHash,
       matricula: "2024003",
       perfilId: 3,
     },
   ];
 
   for (const aluno of alunos) {
-    const isAdmin = aluno.email === "houston@email.com";
     await prisma.aluno.upsert({
       where: { email: aluno.email },
-      update: isAdmin ? { senha: aluno.senha } : {},
+      update: { senha: aluno.senha },
       create: aluno,
     });
   }

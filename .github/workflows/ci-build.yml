@@ -94,14 +94,14 @@ jobs:
       - name: Rodar smoke test - Login
         uses: grafana/run-k6-action@v1
         with:
-          path: tests/k6/smoke/smoke-login.js
+          path: tests/performance/smoke/smoke-login.js
         env:
           BASE_URL: http://localhost:3000
 
       - name: Rodar smoke test - Monitorias
         uses: grafana/run-k6-action@v1
         with:
-          path: tests/k6/smoke/smoke-monitorias.js
+          path: tests/performance/smoke/smoke-monitorias.js
         env:
           BASE_URL: http://localhost:3000
   

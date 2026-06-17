@@ -6,9 +6,7 @@ import path from "path";
 
 import {
   QASE_CASE_MAP,
-  createQaseRun,
   reportQaseResult,
-  completeQaseRun,
 } from "./utils/qase-reporter.js";
 
 describe("Login E2E", function () {
@@ -47,16 +45,10 @@ describe("Login E2E", function () {
       .setChromeOptions(options)
       .setChromeService(service)
       .build();
-
-    // Cria um test run no qase.io antes de executar os testes.
-    await createQaseRun(`Login E2E - ${new Date().toISOString()}`);
   });
 
   after(async function () {
     await driver.quit();
-
-    // Finaliza o test run no qase.io após todos os testes.
-    await completeQaseRun();
   });
 
   /**
@@ -98,7 +90,7 @@ describe("Login E2E", function () {
         .findElement(By.css("input[name='email']"))
         .sendKeys("joao@email.com");
 
-      await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("123456");
+      await driver.findElement(By.css("#inputSenhaLogin")).sendKeys("J414!");
       await driver.findElement(By.css("#btnLogin")).click();
 
       await driver.wait(until.urlContains("/pages/home.html"), 10000);

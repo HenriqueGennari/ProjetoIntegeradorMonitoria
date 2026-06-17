@@ -29,6 +29,17 @@ export const QASE_CASE_MAP = {
   LOGIN_SUCESSO_ALUNO: 1,
   LOGIN_CREDENCIAIS_INVALIDAS: 2,
   LOGIN_CAMPOS_VAZIOS: 3,
+  CADASTRO_ALUNO_VALIDO: 4,
+  CADASTRO_MATRICULA_DUPLICADA: 5,
+  CADASTRO_EMAIL_DUPLICADO: 6,
+  VISUALIZAR_MONITORIAS_DISPONIVEIS: 7,
+  INSCRICAO_MONITORIA: 8,
+  INSCRICAO_DUPLICADA: 9,
+  VISUALIZAR_MINHAS_INSCRICOES: 10,
+  CRIAR_MONITORIA_VALIDA: 11,
+  CRIAR_MONITORIA_HORARIO_INVALIDO: 12,
+  CRIAR_MONITORIA_CONFLITO_HORARIO: 13,
+  EDITAR_MONITORIA: 14,
 } as const;
 
 // Guarda o ID do test run atual para poder vincular os resultados.
@@ -36,8 +47,13 @@ let currentRunId: number | null = null;
 
 /**
  * Cria um test run no qase.io contendo os casos de teste que serão executados.
+ * Se um run já estiver ativo, reutiliza o existente.
  */
 export async function createQaseRun(title: string): Promise<number> {
+  if (currentRunId) {
+    return currentRunId;
+  }
+
   if (!PROJECT_CODE) {
     throw new Error(
       "QASE_PROJECT_CODE não está definido nas variáveis de ambiente."

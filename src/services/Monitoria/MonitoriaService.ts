@@ -147,6 +147,7 @@ class MonitoriaService {
 
     const monitoriaNova = await this._monitoriaRepository.create(dadosFormatados)
 
+
     // emitindo o evento para a auditoria
     const eventoCreateMonitoria = eventEmmiter.emit("Monitoria:Criada", {
       usuarioId,

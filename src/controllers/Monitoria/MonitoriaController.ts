@@ -105,6 +105,7 @@ class MonitoriaController{
             if (err.message?.startsWith("CONFLITO_HORARIO")) {
                 return res.status(409).json({ erro: err.message });
             }
+            console.log(err.message)
             return res.status(500).json({ erro: err.message });
         }
     }
