@@ -22,6 +22,7 @@ class LoginController{
 
             const user = await authService.validateUser(dados.email, dados.senha)
 
+            //colocar isso no service
             const perfilNome = (user.perfil as any)?.nome || "";
             const token = await generateJWT({id : user.id, nome : user.nome, email : user.email, matricula : user.matricula, perfil : perfilNome} , "2h");
 

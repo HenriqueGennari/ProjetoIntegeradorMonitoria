@@ -19,6 +19,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             },
             skip: skip || 0,
             take: take || 50
@@ -43,6 +48,11 @@ class AlunoPrismaRepository {
                 matricula: true,
                 senha: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 
@@ -61,6 +71,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 
@@ -76,6 +91,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         })
 
@@ -95,6 +115,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         })
 
@@ -111,6 +136,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 
@@ -125,7 +155,12 @@ class AlunoPrismaRepository {
             select : {
                 id : true,
                 nome : true,
-                perfilId : true
+                perfilId : true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 
@@ -141,6 +176,11 @@ class AlunoPrismaRepository {
                 email: true,
                 matricula: true,
                 perfilId: true,
+                perfil: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 

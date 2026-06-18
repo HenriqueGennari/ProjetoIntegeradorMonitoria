@@ -13,6 +13,7 @@ class AuthService{
 
         const user = await this.existeUser(email)
 
+
         const adminHouston = user.email === "houston@sempreceub.com"; // pepper exclusivo para o admin Houston
 
         const senhaParaComparar = adminHouston ? senha + getPepper() : senha; //se for o admin específico, uso a senha + pepper
@@ -22,6 +23,7 @@ class AuthService{
         if(!user || !senhaValida){
             throw new Error ("CREDENCIAIS_INVALIDAS");
         }
+
 
         eventEmmiter.emit("Aluno:Login", { // evento de auditoria de login 
             usuarioId: user.id,
