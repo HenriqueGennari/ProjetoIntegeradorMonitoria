@@ -1,10 +1,10 @@
 # Changelog Houston Education
 ### Ferraris a 200 por hora.
 
-Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
+Todas as alterações deste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
-e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+e esse projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 
 
@@ -36,11 +36,80 @@ Exemplo de evolução de versão:
 0.1.0 -> 0.2.0 -> 0.3.0 -> 1.0.0 -> 1.1.0 -> 1.1.1
 ```
 
----
 
 ## Notes
 
 - **Versões mais antigas ficam sempre abaixo das versões mais recentes, seguindo o padrão estabelecido.**
+
+---
+
+## [1.5.0] - 2026-06-18
+
+### Added
+
+**Testes de Performance e E2E**
+- Estrutura de testes com k6 (smoke, load, stress, soak e spike) e comandos no `package.json`.
+- Smoke tests de login e monitorias integrados ao CI.
+- Testes E2E de login, monitoria e inscrição.
+- Integração com qase.io para reporte de testes.
+
+**Campo ATA em Monitorias**
+- Novo campo `ata` na tabela de monitoria.
+- Lógica de atualização do campo com validações e tratamento no frontend.
+
+**Atribuição Automática de Monitor**
+- O monitor é atribuído automaticamente ao cadastrar uma monitoria.
+- Select de monitor desabilitado no formulário de cadastro.
+
+**Auditoria do Sistema**
+- Nova tabela `Auditoria` com migration correspondente.
+- Eventos e listeners de auditoria para criação de monitoria, login, atualização de usuário, atualização de monitoria e inscrição.
+- Página de auditoria com filtros por dia e exibição de detalhes.
+- Rotas, controller e service de auditoria.
+
+**Seed do Banco**
+- Ajustes no `seed.ts` para refletir novas necessidades do sistema: Mudança nas senhas dos usuários de teste e alterações do banco.
+
+### Changed
+
+**Banco de Dados**
+- Migração do PostgreSQL para CockroachDB.
+- Provider do Prisma ajustado para `cockroachdb`.
+- Uso de `sequence()` ao invés de `autoincrement()` nos IDs.
+
+**CI/CD**
+- Pipeline ajustada para rodar smoke tests.
+- Workflow migrado para usar CockroachDB ao invés de PostgreSQL.
+- Jobs separados em build e smoke.
+
+**Interface e UX**
+- Ajustes de HTML/CSS na página "Minhas Inscrições".
+- Filtro por dia na tela de Auditoria.
+- Exibição do nome do aluno e da monitoria nos detalhes de inscrição.
+- Ícones de sucesso atualizados e bordas vermelhas em campos não preenchidos no formulário de monitoria.
+
+**Documentação**
+- Atualizações no README.
+- Ajustes no `.gitignore`.
+
+### Fixed
+
+**Atualização de Monitoria**
+- Corrigido bug que exibia popup de erro da ATA mesmo quando o campo não estava preenchido.
+
+**Exclusão de Usuário**
+- Impedida auto-exclusão de usuários no dashboard admin.
+
+**Cadastro de Monitoria**
+- Corrigido bug que impedia um monitor de criar monitoria devido ao select desabilitado.
+
+**Retorno do Perfil**
+- HOTFIX: retorno do nome do perfil nas funções do repository de aluno para garantir a criação correta do token JWT.
+
+### Security
+
+**Dados do Aluno**
+- Ajustado retorno das funções do repository de aluno para expor apenas dados úteis e seguros.
 
 ---
 
