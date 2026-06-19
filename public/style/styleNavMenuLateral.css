@@ -255,10 +255,10 @@ nav {
 
 /* O balãozinho do menu */
 .dropdown-conteudo {
-    display: none; 
+    display: flex;
     position: absolute;
-    right: 0; 
-    top: 130%; 
+    right: 0;
+    top: 130%;
     background-color: #013242;
     min-width: 200px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
@@ -266,11 +266,20 @@ nav {
     overflow: hidden;
     flex-direction: column;
     z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transform-origin: top right;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    pointer-events: none;
 }
 
 /* Classe que o JS vai usar para fazer o menu aparecer */
 .dropdown-conteudo.mostrar {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
 }
 
 /* Estilo dos links dentro do menu */

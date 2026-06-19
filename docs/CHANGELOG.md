@@ -43,6 +43,28 @@ Exemplo de evolução de versão:
 
 ---
 
+## [1.5.1] - 2026-06-19
+
+### Added
+
+**Interface e UX**
+- Retorno do nome do curso na query de `getMinhasInscricoes`.
+- Aumento no tamanho dos cards de monitoria e maior peso da fonte no nome da monitoria.
+- Animação suave na barrinha que alterna entre os campus.
+- Layout da página "Minhas Inscrições" reformulado para agrupar monitorias por curso, seguindo o padrão da home.
+- Animação no ícone do menu lateral (três listras) com giro de 180 graus.
+- Hover mais suave nas abas de navegação (cadastro, home etc.).
+- Propriedade CSS `view-transition` para criar efeito de transição nativa ao mudar de página.
+- Animação mais suave ao clicar no ícone de perfil.
+
+### Changed
+
+**Tela de Perfil**
+- Ajustada posição dos botões "Alterar senha", "Salvar" e "Cancelar": botão de alteração de senha alinhado à esquerda.
+- Renomeado botão "Salvar alterações" para "Salvar".
+
+---
+
 ## [1.5.0] - 2026-06-18
 
 ### Added
