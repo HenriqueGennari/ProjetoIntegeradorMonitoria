@@ -75,14 +75,11 @@ body {
 }
 
 .inscricoes-lista {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    display: block;
     padding: 30px 20px;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    justify-items: center;
 }
 
 .inscricao-card {
@@ -103,7 +100,7 @@ body {
 
 .inscricao-card-titulo {
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #024059;
     line-height: 1.3;
 }

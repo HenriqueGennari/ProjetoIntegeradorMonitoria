@@ -61,8 +61,6 @@ class InscricaosService{
             }
         });
 
-        console.log("EVENTO EMITIDO (CREATE INSCRICAO)")
-
         return dadosInscricaos;
     }
     async getById(id : number) : Promise <any>{

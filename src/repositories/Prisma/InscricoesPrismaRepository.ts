@@ -102,6 +102,15 @@ class InscricaoPrismaRepository {
             disciplina: {
               select: {
                 nome: true,
+                cursos: {
+                  select: {
+                    curso: {
+                      select: {
+                        nome: true,
+                      },
+                    },
+                  },
+                },
               },
             },
             local: {

@@ -4,6 +4,27 @@ import { getAuthHeaders } from "../utils/getAuthHeaders.js";
 
 let todasMonitorias = [];
 let campusList = [];
+let indicadorTab = null;
+
+function posicionarIndicador(tab, animar = true) {
+    if (!indicadorTab || !tab) return;
+
+    if (!animar) {
+        indicadorTab.classList.add("sem-transicao");
+    }
+
+    const left = tab.offsetLeft;
+    const width = tab.offsetWidth;
+
+    indicadorTab.style.transform = `translateX(${left}px)`;
+    indicadorTab.style.width = `${width}px`;
+
+    if (!animar) {
+        // Força o reflow para aplicar a posição sem transição
+        indicadorTab.offsetHeight;
+        indicadorTab.classList.remove("sem-transicao");
+    }
+}
 
 async function carregarCampusTabs() {
     try {
@@ -14,6 +35,11 @@ async function carregarCampusTabs() {
         campusList = await response.json();
 
         const tabsContainer = document.getElementById("tabsCampus");
+
+        indicadorTab = document.createElement("span");
+        indicadorTab.classList.add("tab-indicator");
+        tabsContainer.appendChild(indicadorTab);
+
         campusList.forEach(campus => {
             const btn = document.createElement("button");
             btn.classList.add("tab-btn");
@@ -26,9 +52,16 @@ async function carregarCampusTabs() {
             if (e.target.classList.contains("tab-btn")) {
                 tabsContainer.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
                 e.target.classList.add("active");
+                posicionarIndicador(e.target);
                 filtrarPorCampus(e.target.dataset.campus);
             }
         });
+
+        // Posicionar indicador na tab ativa inicial (Todas) sem animação
+        const tabAtiva = tabsContainer.querySelector('.tab-btn.active');
+        if (tabAtiva) {
+            posicionarIndicador(tabAtiva, false);
+        }
     } catch (error) {
         console.log(error);
     }
@@ -429,6 +462,7 @@ function destacarMonitoriaDaUrl() {
         if (tabBtn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             tabBtn.classList.add("active");
+            posicionarIndicador(tabBtn, false);
             filtrarPorCampus(campusNome);
         }
     }

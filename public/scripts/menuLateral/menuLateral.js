@@ -8,12 +8,18 @@ const toggleMenu = (e) => {
     e.preventDefault(); // Previne o clique
     menuLateral.classList.toggle('ativo');
     overlay.classList.toggle('ativo');
+    if (botaoMenu) {
+        botaoMenu.classList.toggle('girado');
+    }
 };
 
 // Função SÓ para FECHAR (usada pelo overlay)
 const fecharMenu = () => {
     menuLateral.classList.remove('ativo');
     overlay.classList.remove('ativo');
+    if (botaoMenu) {
+        botaoMenu.classList.remove('girado');
+    }
 };
 
 // Clicar no ícone agora "troca" (abre ou fecha)

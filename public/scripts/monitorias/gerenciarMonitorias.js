@@ -530,10 +530,26 @@ function filtrarPorStatus(status) {
 
 const tabsStatus = document.getElementById("tabsStatus");
 if (tabsStatus) {
+    const indicador = document.createElement("span");
+    indicador.classList.add("tab-indicator");
+    tabsStatus.appendChild(indicador);
+
+    function posicionarIndicadorStatus(tab) {
+        if (!indicador || !tab) return;
+        indicador.style.transform = `translateX(${tab.offsetLeft}px)`;
+        indicador.style.width = `${tab.offsetWidth}px`;
+    }
+
+    const tabAtiva = tabsStatus.querySelector(".tab-btn.active");
+    if (tabAtiva) {
+        posicionarIndicadorStatus(tabAtiva);
+    }
+
     tabsStatus.addEventListener("click", (e) => {
         if (e.target.classList.contains("tab-btn")) {
             tabsStatus.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             e.target.classList.add("active");
+            posicionarIndicadorStatus(e.target);
             filtrarPorStatus(e.target.dataset.status);
         }
     });

@@ -162,7 +162,7 @@ h2#titulomonitorias{
   margin: 0 0 15px 0;
   border-radius: 8px;
   width: 100%;
-  min-height: 210px;
+  min-height: 235px;
   position: relative;
   transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s, display 0.3s allow-discrete;
 }
@@ -170,19 +170,23 @@ h2#titulomonitorias{
 .cardmonitoria.tab-hidden {
   display: none;
   opacity: 0;
-  transform: scale(0.95);
   pointer-events: none;
 }
 
 @starting-style {
   .cardmonitoria:not(.tab-hidden) {
     opacity: 0;
-    transform: scale(0.95);
   }
 }
 
 .cardmonitoria:hover{
   transform: scale(1.1);
+}
+
+.cardmonitoria:hover .nomemonitoria {
+  transform: scale(calc(1 / 1.1));
+  transform-origin: center center;
+  font-size: 1.2rem;
 }
 .divbotao{
   margin-top: 20px;
@@ -297,14 +301,18 @@ h2#titulomonitorias{
   justify-content: center;
   gap: 6px;
   width: 100%;
-  height: 130px;
+  height: 140px;
 }
 
 .nomemonitoria {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #024059;
   line-height: 1.3;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .disciplinamonitoria {
@@ -1090,7 +1098,8 @@ textarea[name="ata"]:disabled {
     gap: 0;
     border-bottom: 2px solid #e2e8f0;
     margin-bottom: 20px;
-    padding: 0 8px;
+    padding: 0 4px;
+    position: relative;
 }
 
 .tab-btn {
@@ -1102,8 +1111,9 @@ textarea[name="ata"]:disabled {
     color: #64748b;
     cursor: pointer;
     position: relative;
-    transition: color 0.2s;
+    transition: color 0.3s ease;
     font-family: inherit;
+    z-index: 1;
 }
 
 .tab-btn:hover {
@@ -1115,14 +1125,19 @@ textarea[name="ata"]:disabled {
     font-weight: 600;
 }
 
-.tab-btn.active::after {
-    content: '';
+.tab-indicator {
     position: absolute;
     bottom: -2px;
     left: 0;
-    right: 0;
     height: 2px;
     background: #024059;
+    transition: transform 0.3s ease-out, width 0.3s ease-out;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.tab-indicator.sem-transicao {
+    transition: none;
 }
 
 .campusmonitoria {
@@ -1187,8 +1202,8 @@ textarea[name="ata"]:disabled {
 
 .btn-compartilhar {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 8px;
+    right: 6px;
     width: 32px;
     height: 32px;
     border: none;
@@ -1460,4 +1475,11 @@ textarea[name="ata"]:disabled {
 
 .btn-lista-presenca:hover {
     background: #0b8e98;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tab-btn,
+    .tab-indicator {
+        transition: none;
+    }
 }

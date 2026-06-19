@@ -65,52 +65,87 @@ function renderizarInscricoes(inscricoes) {
     listaInscricoes.innerHTML = "";
 
     if (!inscricoes || inscricoes.length === 0) {
-        listaInscricoes.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888;">Nenhuma monitoria encontrada.</div>`;
+        listaInscricoes.innerHTML = `<div class="sem-inscricoes">Nenhuma monitoria encontrada.</div>`;
         return;
     }
 
+    // Agrupar inscrições por curso
+    const inscricoesPorCurso = {};
     inscricoes.forEach((inscricao) => {
         const m = inscricao.monitoria;
-        const card = document.createElement("div");
-        card.classList.add("cardmonitoria");
-        card.dataset.inscricaoId = inscricao.id;
-        card.dataset.monitoriaId = m.id;
+        const primeiroCurso = m.disciplina?.cursos?.[0]?.curso;
+        const cursoNome = primeiroCurso?.nome || "Sem curso";
+        const cursoSigla = primeiroCurso?.nome
+            ? primeiroCurso.nome.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()
+            : "?";
+        if (!inscricoesPorCurso[cursoNome]) {
+            inscricoesPorCurso[cursoNome] = { sigla: cursoSigla, inscricoes: [] };
+        }
+        inscricoesPorCurso[cursoNome].inscricoes.push(inscricao);
+    });
 
-        const agora = new Date();
-        const monitoriaJaOcorreu = new Date(m.inicio) <= agora;
+    // Renderizar cada curso
+    Object.entries(inscricoesPorCurso).forEach(([cursoNome, cursoData]) => {
+        const cursoContainer = document.createElement("div");
+        cursoContainer.classList.add("curso-container");
 
-        card.innerHTML = `
-            <div class="informacoesmonitoria">
-                <div class="nomemonitoria">${m.nome_monitoria}</div>
-                <div class="disciplinamonitoria">${m.disciplina?.nome || ""}</div>
-                <div class="datamonitoria">
-                    ${new Date(m.inicio).toLocaleDateString()} -
-                    ${new Date(m.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                <div class="campusmonitoria">${m.local?.campus?.nome || ''}</div>
-            </div>
-            <div class="divbotao">
-                <button class="btn-detalhes">Detalhes</button>
-                ${!monitoriaJaOcorreu ? `<button class="btn-inscrito" data-inscricao-id="${inscricao.id}">Inscrito</button>` : ''}
-            </div>
+        const cursoHeader = document.createElement("div");
+        cursoHeader.classList.add("curso-header");
+        cursoHeader.innerHTML = `
+            <div class="curso-sigla">${cursoData.sigla}</div>
+            <div class="curso-nome">${cursoNome}</div>
         `;
+        cursoContainer.appendChild(cursoHeader);
 
-        const btnDetalhes = card.querySelector(".btn-detalhes");
-        btnDetalhes.addEventListener("click", (e) => {
-            e.stopPropagation();
-            abrirModalDetalhes(inscricao);
+        const cursoMonitorias = document.createElement("div");
+        cursoMonitorias.classList.add("curso-monitorias");
+
+        cursoData.inscricoes.forEach((inscricao) => {
+            const m = inscricao.monitoria;
+            const card = document.createElement("div");
+            card.classList.add("cardmonitoria");
+            card.dataset.inscricaoId = inscricao.id;
+            card.dataset.monitoriaId = m.id;
+
+            const agora = new Date();
+            const monitoriaJaOcorreu = new Date(m.inicio) <= agora;
+
+            card.innerHTML = `
+                <div class="informacoesmonitoria">
+                    <div class="nomemonitoria">${m.nome_monitoria}</div>
+                    <div class="disciplinamonitoria">${m.disciplina?.nome || ""}</div>
+                    <div class="datamonitoria">
+                        ${new Date(m.inicio).toLocaleDateString()} -
+                        ${new Date(m.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div class="campusmonitoria">${m.local?.campus?.nome || ''}</div>
+                </div>
+                <div class="divbotao">
+                    <button class="btn-detalhes">Detalhes</button>
+                    ${!monitoriaJaOcorreu ? `<button class="btn-inscrito" data-inscricao-id="${inscricao.id}">Inscrito</button>` : ''}
+                </div>
+            `;
+
+            const btnDetalhes = card.querySelector(".btn-detalhes");
+            btnDetalhes.addEventListener("click", (e) => {
+                e.stopPropagation();
+                abrirModalDetalhes(inscricao);
+            });
+
+            if (!monitoriaJaOcorreu) {
+                const btnInscrito = card.querySelector(".btn-inscrito");
+                btnInscrito.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    inscricaoParaCancelar = inscricao.id;
+                    popupCancelar.classList.remove("hidden");
+                });
+            }
+
+            cursoMonitorias.appendChild(card);
         });
 
-        if (!monitoriaJaOcorreu) {
-            const btnInscrito = card.querySelector(".btn-inscrito");
-            btnInscrito.addEventListener("click", (e) => {
-                e.stopPropagation();
-                inscricaoParaCancelar = inscricao.id;
-                popupCancelar.classList.remove("hidden");
-            });
-        }
-
-        listaInscricoes.appendChild(card);
+        cursoContainer.appendChild(cursoMonitorias);
+        listaInscricoes.appendChild(cursoContainer);
     });
 }
 

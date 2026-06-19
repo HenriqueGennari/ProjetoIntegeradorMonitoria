@@ -1,3 +1,12 @@
+/* Transições suaves entre páginas */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.5s;
+}
+
 /* =========================================
    BARRA DE NAVEGAÇÃO SUPERIOR (NAV)
    ========================================= */
@@ -59,11 +68,21 @@ nav {
   height: auto;
   cursor: pointer;
   display: block;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
+}
+
+.icone img.girado {
+  transform: rotate(180deg);
 }
 
 .iconeMenu {
   left: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icone img {
+    transition: none;
+  }
 }
 
 .iconeUsuario {
@@ -120,13 +139,13 @@ nav {
     gap: 15px;
     font-size: 1.3rem;
     padding: 20px 20px; /* Espaço DENTRO do botão */
-    transition: background-color 0.2s ease;
+    transition: background-color 0.35s ease;
     white-space: nowrap; /* Força o texto a não quebrar para a linha de baixo */
     font-size: 1.15rem;
 }
 
 .menuConteudo li a:hover {
-    background-color: #035a7d;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 /* =========================================
@@ -165,7 +184,7 @@ nav {
 }
 
 .submenu-lista li a:hover {
-    background-color: #024a66;
+    background-color: rgba(255, 255, 255, 0.06);
 
 }
 
@@ -230,7 +249,7 @@ nav {
     transition: transform 0.2s ease;
 }
 
-.btn-icone-usuario:hover img, .iconeMenu a:hover img {
+.btn-icone-usuario:hover img {
     transform: scale(1.1);
 }
 
