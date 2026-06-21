@@ -43,6 +43,32 @@ Exemplo de evolução de versão:
 
 ---
 
+## [1.5.2] - 2026-06-21
+
+### Added
+
+**Interface e UX**
+- Ícones de "erro" associados às mensagens de "not found" (`monitoramento.png` e `monitoramento2.png` na pasta `assets`).
+- Nova página de dashboard de admin com cards que levam para as páginas das entidades gerenciáveis.
+- Novo ícone de setinha ao lado da aba "Minhas monitorias".
+- Animação na página de perfil: ao alterar qualquer valor dos inputs, uma borda azul indica que o campo foi modificado.
+- Ícone de lixeira na tela de gerenciamento de monitorias para exclusão.
+
+**Funcionalidades**
+- Lógica de exclusão de monitoria, permitida somente ao autor da monitoria ou ao admin.
+- Interface `UsuarioLogado` para retornos em funções que utilizam `AuthRequest` estendido do `Request`.
+
+**Auditoria**
+- Evento `Monitoria:Excluir`, listener e registro na tabela de auditoria.
+- Evento `Aluno:Senha`, listener e registro na tabela de auditoria para alteração de senha.
+
+### Fixed
+
+**Tela de Perfil**
+- Corrigido o envio do campo `senhaConfirmada` no frontend da função de atualizar senha, que impedia a atualização via interface.
+
+---
+
 ## [1.5.1] - 2026-06-19
 
 ### Added
