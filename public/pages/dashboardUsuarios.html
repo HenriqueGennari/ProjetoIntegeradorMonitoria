@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Cursos</title>
+    <title>Dashboard Usuários</title>
     <link rel="shortcut icon" href="../assets/img/iconeHoustonEducation.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="../style/styleNavMenuLateral.css">
@@ -24,7 +24,7 @@
         if (user.perfil !== "MONITOR" && user.perfil !== "ADMIN") {
             window.location.href = "/pages/naoAutorizado.html";
         }
-    </script>
+    </script> <!--evitar do cara clicar com o botão direito e abrir-->
 
     <nav>
         <div class="icone iconeMenu">
@@ -96,45 +96,53 @@
     <div id="overlay" class="overlay-menu"></div>
 
     <div class="dashboard-header">
-        <h1>Dashboard Admin</h1>
-        <p>Gerencie os Cursos da Instituição</p>
+        <h1>Dashboard Usuários</h1>
+        <p>Gerencie Usuários, Perfis e Permissões do Sistema</p>
     </div>
 
     <nav class="dashboard-tabs">
-        <a href="/dashboard-usuarios">Usuários</a>
+        <a href="/dashboard-usuarios" class="active">Usuários</a>
         <a href="/dashboard-locais">Locais</a>
         <a href="/dashboard-disciplinas">Disciplinas</a>
-        <a href="/dashboard-cursos" class="active">Cursos</a>
+        <a href="/dashboard-cursos">Cursos</a>
         <a href="/dashboard-auditoria">Auditoria</a>
     </nav>
 
     <div class="dashboard-container">
         <div class="stats-grid">
             <div class="stat-card total">
-                <div class="stat-label">Total de Cursos</div>
+                <div class="stat-label">Total de Usuários</div>
                 <div class="stat-value" id="statTotal">0</div>
             </div>
         </div>
 
         <div class="filtros-dashboard">
-            <input type="text" id="buscaCurso" placeholder="Buscar por nome...">
+            <input type="text" id="buscaUsuario" placeholder="Buscar por nome, email ou matricula...">
+            <select id="filtroPerfil">
+                <option value="">Todos os perfis</option>
+                <option value="ADMIN">Admin</option>
+                <option value="MONITOR">Monitor</option>
+                <option value="ALUNO">Aluno</option>
+            </select>
             <button id="btnAbrirModalCriar" class="btn-adicionar-usuario">
-                <i class="fas fa-plus"></i> Adicionar Curso
+                <i class="fas fa-plus"></i> Adicionar Usuário
             </button>
         </div>
 
         <div class="tabela-container">
-            <table id="tabelaCursos">
+            <table id="tabelaUsuarios">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Descrição</th>
+                        <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Matrícula</th>
+                        <th>Perfil</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="3">Carregando Cursos...</td>
+                        <td colspan="5">Carregando Usuários...</td>
                     </tr>
                 </tbody>
             </table>
@@ -151,52 +159,88 @@
         </div>
     </div>
 
-    <div id="modalCriarCurso" class="modal-overlay">
+    <div id="modalEditarPerfil" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Adicionar Curso</h2>
-                <span class="close-btn" id="btnFecharModalCriar">&times;</span>
-            </div>
-            <form id="formCriarCurso">
-                <div class="campo-form-atualizar">
-                    <label>Nome</label>
-                    <input type="text" name="nome" id="inputNomeCriar" placeholder="Nome do curso" required>
-                    <span id="erroNomeCriar" class="mensagem-erro"></span>
-                </div>
-                <div class="campo-form-atualizar">
-                    <label>Descrição</label>
-                    <input type="text" name="descricao" id="inputDescricaoCriar" placeholder="Descricao do curso">
-                    <span id="erroDescricaoCriar" class="mensagem-erro"></span>
-                </div>
-                <button type="submit" id="btnSalvarCurso" class="btn-salvar-modal">Criar Curso</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modalEditarCurso" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Curso</h2>
+                <h2>Editar Perfil</h2>
                 <span class="close-btn" id="btnFecharModalEditar">&times;</span>
             </div>
-            <form id="formEditarCurso">
-                <input type="hidden" id="idCursoEditar" name="id">
+            <form id="formEditarPerfil">
+                <input type="hidden" id="idUsuarioEditar" name="idUsuario">
                 <div class="campo-form-atualizar">
                     <label>Nome</label>
-                    <input type="text" name="nome" id="nomeCursoEditar" placeholder="Nome do curso" required>
+                    <input type="text" id="nomeUsuarioEditar" name="nome">
                     <span id="erroNomeEditar" class="mensagem-erro"></span>
                 </div>
                 <div class="campo-form-atualizar">
-                    <label>Descrição</label>
-                    <input type="text" name="descricao" id="descricaoCursoEditar" placeholder="Descricao do curso">
-                    <span id="erroDescricaoEditar" class="mensagem-erro"></span>
+                    <label>Email</label>
+                    <input type="email" id="emailUsuarioEditar" name="email">
+                    <span id="erroEmailEditar" class="mensagem-erro"></span>
                 </div>
-                <button type="submit" id="btnSalvarEdicao" class="btn-salvar-modal">Salvar Alteração</button>
+                <div class="campo-form-atualizar">
+                    <label>Matrícula</label>
+                    <input type="text" id="matriculaUsuarioEditar" name="matricula">
+                    <span id="erroMatriculaEditar" class="mensagem-erro"></span>
+                </div>
+                <div class="campo-form-atualizar">
+                    <label>Perfil Atual</label>
+                    <input type="text" id="perfilAtualEditar" readonly>
+                </div>
+                <div class="campo-form-atualizar">
+                    <label>Novo Perfil</label>
+                    <select id="novoPerfilEditar" name="perfilId">
+                        <option value="1">Admin</option>
+                        <option value="2">Monitor</option>
+                        <option value="3">Aluno</option>
+                    </select>
+                </div>
+                <div class="campo-form-atualizar">
+                    <label>Senha <small>(deixe em branco para manter a atual)</small></label>
+                    <input type="password" id="senhaUsuarioEditar" name="senha" placeholder="Nova senha">
+                    <span id="erroSenhaEditar" class="mensagem-erro"></span>
+                </div>
+                <button type="submit" id="btnSalvarPerfil" class="btn-salvar-modal">Salvar Alteração</button>
             </form>
         </div>
     </div>
 
-    <script type="module" src="../scripts/dashboardAdmin/dashboardCursos.js"></script>
+    <div id="modalCriarUsuario" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Usuário</h2>
+                <span class="close-btn" id="btnFecharModalCriar">&times;</span>
+            </div>
+            <form id="formCriarUsuario">
+                <div class="campo-form-atualizar">
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="inputNomeCriar" placeholder="Nome completo" required>
+                    <span id="erroNomeCriar" class="mensagem-erro"></span>
+                </div>
+                <div class="campo-form-atualizar">
+                    <label>Email</label>
+                    <input type="email" name="email" id="inputEmailCriar" placeholder="email@exemplo.com" required>
+                    <span id="erroEmailCriar" class="mensagem-erro"></span>
+                </div>
+                <div class="campo-form-atualizar">
+                    <label>Matrícula</label>
+                    <input type="text" name="matricula" id="inputMatriculaCriar"
+                        placeholder="Matrícula (8 a 11 dígitos)" required minlength="8" maxlength="11">
+                    <span id="erroMatriculaCriar" class="mensagem-erro"></span>
+                </div>
+                <div class="campo-form-atualizar input-senha-wrapper">
+                    <label>Senha</label>
+                    <input type="password" name="senha" id="inputSenhaCriar" placeholder="Senha" required>
+                    <button type="button" class="btn-toggle-senha" id="btnToggleSenhaCriar" aria-label="Mostrar senha">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <span id="erroSenhaCriar" class="mensagem-erro"></span>
+                </div>
+                <button type="submit" id="btnSalvarUsuario" class="btn-salvar-modal">Criar Usuário</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/dashboardAdmin/dashboardAdmin.js"></script>
 </body>
 
 </html>

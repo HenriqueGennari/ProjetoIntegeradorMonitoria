@@ -104,8 +104,6 @@ class InscricaosService{
             }
         });
 
-        console.log("EVENTO EMITIDO (DELETE INSCRICAO)")
-
         return InscricaoDados;
     }
 

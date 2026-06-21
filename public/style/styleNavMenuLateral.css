@@ -158,12 +158,14 @@ nav {
 
 .seta-submenu {
     margin-left: auto;
-    font-size: 0.8rem;
+    width: 1rem;
+    height: 1rem;
     transition: transform 0.2s ease;
+    color: inherit;
 }
 
 .submenu.aberto .seta-submenu {
-    transform: rotate(180deg);
+    transform: rotate(90deg);
 }
 
 .submenu-lista {

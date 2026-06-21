@@ -93,7 +93,8 @@ body {
     font-family: inherit;
 }
 
-.campo-perfil input:focus {
+.campo-perfil input:focus,
+.campo-perfil input.input-preenchido {
     border-color: #024059;
     box-shadow: 0 2px 8px rgba(2, 64, 89, 0.15);
 }

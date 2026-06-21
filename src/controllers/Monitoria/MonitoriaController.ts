@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../middlewares/autenticadoMiddleware.js";
 import MonitoriaService from "../../services/Monitoria/MonitoriaService.js";
 import MonitoriaPrismaRepository from "../../repositories/Prisma/MonitoriaPrismaRepository.js";
+import { UsuarioLogado } from "../../models/UsuarioLogado.js";
 
 const monitoriaService = new MonitoriaService(new MonitoriaPrismaRepository);
 
@@ -140,10 +141,12 @@ class MonitoriaController{
             return Res.status(500).json({ error: err.message });
         }
     }
-    async delete(Req : Request, Res : Response){
+    async delete(Req : AuthRequest, Res : Response){
         try {
-            const {id} = Req.params
-            const monitoriaDados = await monitoriaService.delete(id)
+            const {id} = Req.params 
+            const user = Req.user
+
+            const monitoriaDados = await monitoriaService.delete(id, user!)
 
             return Res.status(200).json(monitoriaDados)
             

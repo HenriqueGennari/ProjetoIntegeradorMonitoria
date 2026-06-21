@@ -7,6 +7,15 @@ const emailInput = document.getElementById("email");
 const matriculaInput = document.getElementById("matricula");
 
 let userId = "";
+const valoresOriginais = new Map();
+
+function salvarValorOriginal(input) {
+    valoresOriginais.set(input, input.value);
+}
+
+function valorFoiAlterado(input) {
+    return input.value !== valoresOriginais.get(input);
+}
 
 function carregarDadosPerfil() {
     const token = localStorage.getItem("token");
@@ -19,6 +28,8 @@ function carregarDadosPerfil() {
     nomeInput.value = decoded.nome || "";
     emailInput.value = decoded.email || "";
     matriculaInput.value = decoded.matricula || "";
+
+    [nomeInput, emailInput, matriculaInput].forEach(salvarValorOriginal);
 }
 
 formPerfil.addEventListener("submit", async (e) => {
@@ -75,6 +86,7 @@ document.getElementById("btnFecharPopup")?.addEventListener("click", () => {
 
 document.getElementById("btnCancelar")?.addEventListener("click", () => {
     carregarDadosPerfil();
+    [nomeInput, emailInput, matriculaInput].forEach(atualizarEstadoAlterado);
 });
 
 // Modal de senha
@@ -93,11 +105,13 @@ btnAbrirModalSenha?.addEventListener("click", () => {
 btnCancelarSenha?.addEventListener("click", () => {
     modalSenha.classList.add("hidden");
     formSenha.reset();
+    [novaSenhaInput, confirmarSenhaInput].forEach(atualizarEstadoAlterado);
 });
 
 modalSenha?.querySelector(".modal-senha-overlay")?.addEventListener("click", () => {
     modalSenha.classList.add("hidden");
     formSenha.reset();
+    [novaSenhaInput, confirmarSenhaInput].forEach(atualizarEstadoAlterado);
 });
 
 // Toggle olhinho nos campos de senha
@@ -150,7 +164,7 @@ formSenha?.addEventListener("submit", async (e) => {
                 ...getAuthHeaders()
             },
             credentials: "same-origin",
-            body: JSON.stringify({ senha: novaSenha })
+            body: JSON.stringify({ senha: novaSenha, senhaConfirmada: confirmarSenha })
         });
 
         if (!response.ok) {
@@ -173,4 +187,25 @@ formSenha?.addEventListener("submit", async (e) => {
     }
 });
 
+function atualizarEstadoAlterado(input) {
+    const alterado = valorFoiAlterado(input);
+    input.classList.toggle("input-preenchido", alterado);
+    if (alterado) {
+        input.style.borderColor = "#024059";
+        input.style.boxShadow = "0 2px 8px rgba(2, 64, 89, 0.15)";
+    } else {
+        input.style.borderColor = "";
+        input.style.boxShadow = "";
+    }
+}
+
+function inicializarEstadosPreenchidos() {
+    document.querySelectorAll("#formPerfil input, #formSenha input").forEach((input) => {
+        salvarValorOriginal(input);
+        atualizarEstadoAlterado(input);
+        input.addEventListener("input", () => atualizarEstadoAlterado(input));
+    });
+}
+
 carregarDadosPerfil();
+inicializarEstadosPreenchidos();

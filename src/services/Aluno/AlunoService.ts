@@ -1,7 +1,8 @@
 import { Aluno } from "@prisma/client";
 import type AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js";
-import bcrypt from  "bcrypt";
+import bcrypt from "bcrypt";
 import { eventEmmiter } from "../../utils/events/Evento.js";
+import { getPepper } from "../../utils/security/pepper.js";
 import { allowedNodeEnvironmentFlags } from "process";
 
 
@@ -192,19 +193,32 @@ class AlunosService{
         
         if (id !== usuarioId) {
             throw new Error("NAO_AUTORIZADO");
-        }
+        } 
 
         if (senha.trim() === "") {
-            throw new Error("SENHA_OBRIGATORIA");
+            throw new Error("SENHA_OBRIGATORIA"); 
         }
 
-        const senhaHash = await bcrypt.hash(senha, 10);
+        const adminHouston = alunoExistente.email === "houston@sempreceub.com";
+        const senhaParaHash = adminHouston ? senha + getPepper() : senha;
+
+        const senhaHash = await bcrypt.hash(senhaParaHash, 10);
 
         const alunoAtualizado = await this._alunoPrismaRepository.updateSenha(id, senhaHash);
 
         if (!alunoAtualizado) {
             throw new Error("ERRO_AO_ATUALIZAR_SENHA");
         }
+
+        eventEmmiter.emit("Aluno:Senha", {
+            usuarioId: id,
+            acao: "ATUALIZACAO_SENHA",
+            entidade: "Aluno",
+            entidadeId: id,
+            detalhes: {
+                mensagem: "Senha atualizada pelo usuario"
+            }
+        });
 
         return alunoAtualizado;
     }

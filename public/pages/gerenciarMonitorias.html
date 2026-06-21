@@ -74,7 +74,7 @@
                     <a href="#" class="submenu-toggle" id="toggleMinhasMonitorias">
                         <img src="../assets/img/iconeGerenciarMonitorias.png" alt="Icone Minhas Monitorias">
                         <span>Minhas monitorias</span>
-                        <span class="seta-submenu">&#9662;</span>
+                        <svg class="seta-submenu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </a>
                     <ul class="submenu-lista">
                         <li>
@@ -269,6 +269,15 @@
         </div>
     </div>
 
+
+    <!-- Popup de confirmacao para excluir monitoria -->
+    <div id="popupExcluirMonitoria" class="popup hidden">
+        <div class="popup-content">
+            <p id="mensagemConfirmarExclusao">Deseja realmente excluir esta monitoria?</p>
+            <button class="btn-cancelar" id="btnConfirmarExclusao">Excluir monitoria</button>
+            <button class="btn-fechar" id="btnFecharPopupExclusao">Fechar</button>
+        </div>
+    </div>
 
     <script type="module" src="../scripts/carregarNomeUsuario.js?v=2"></script>
     <script type="module" src="../scripts/monitorias/gerenciarMonitorias.js?v=3"></script>

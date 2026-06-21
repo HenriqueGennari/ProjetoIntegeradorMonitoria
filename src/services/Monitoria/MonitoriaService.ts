@@ -2,6 +2,7 @@ import { json } from "stream/consumers";
 import MonitoriaPrismaRepository from "../../repositories/Prisma/MonitoriaPrismaRepository.js";
 import { Monitoria } from "@prisma/client";
 import { eventEmmiter } from "../../utils/events/Evento.js";
+import { UsuarioLogado } from "../../models/UsuarioLogado.js";
 
 interface MonitoriaInput {
   nome_monitoria: string;
@@ -294,14 +295,31 @@ class MonitoriaService {
     return dadosMonitoria;
   } // atualiza monitoria
 
-  async delete(id: string): Promise<Monitoria> {
-    const monitoriaDados = await this._monitoriaRepository.delete(id);
+  async delete(id: string, user : UsuarioLogado): Promise<Monitoria> {
 
-    if (!monitoriaDados) {
-      throw new Error("MONITORIA_INEXISTENTE");
+    const monitoriaExistente = await this._monitoriaRepository.getById(id)
+
+    if (!monitoriaExistente){
+      throw new Error ("MONITORIA_INEXISTENTE")
     }
 
-    return monitoriaDados;
+    if (monitoriaExistente.monitorId != user.id && user.perfil != "ADMIN"){
+      throw new Error ("EXCLUSAO_NAO_PERMITIDA")
+    }
+
+    const monitoriaExcluida = await this._monitoriaRepository.delete(id);
+
+    eventEmmiter.emit("Monitoria:Deletada", {
+      usuarioId: user.id,
+      monitoriaId: monitoriaExcluida.id,
+      monitoria: {
+        nome: monitoriaExcluida.nome_monitoria,
+        data: monitoriaExcluida.inicio.toISOString(),
+        monitorId: monitoriaExcluida.monitorId,
+      },
+    });
+
+    return monitoriaExcluida;
   } // deleta monitoria
 }
 

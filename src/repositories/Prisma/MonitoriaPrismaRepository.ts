@@ -61,6 +61,7 @@ class MonitoriaPrismaRepository {
         fim: {
           gte: new Date(),
         },
+        deletedAt : null,
       },
       include: {
         disciplina: {
@@ -218,6 +219,7 @@ class MonitoriaPrismaRepository {
     const monitoriaDados = await prisma.monitoria.findFirst({
       where: {
         id: id,
+        deletedAt: null,
       },
       select: {
         id: true,

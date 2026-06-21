@@ -4,6 +4,13 @@ import { getCookie } from "../utils/getCookie.js";
 
 const lista = document.getElementById("listamonitorias");
 let todosLocais = [];
+let monitoriaParaExcluir = null;
+let timeoutMensagemVazia = null;
+
+const popupExcluirMonitoria = document.getElementById("popupExcluirMonitoria");
+const mensagemConfirmarExclusao = document.getElementById("mensagemConfirmarExclusao");
+const btnConfirmarExclusao = document.getElementById("btnConfirmarExclusao");
+const btnFecharPopupExclusao = document.getElementById("btnFecharPopupExclusao");
 
 function getAuthHeaders() {
     const token = localStorage.getItem("token") || getCookie("token");
@@ -167,7 +174,7 @@ async function carregarMonitorias() {
             throw new Error("ERRO_AO_CARREGAR");
         }
 
-        const monitorias = await response.json();
+        const monitorias = (await response.json()).filter((m) => !m.deletedAt);
 
         if (monitorias.length === 0) {
             lista.innerHTML = "<li>Nenhuma monitoria encontrada!</li>";
@@ -195,15 +202,34 @@ async function carregarMonitorias() {
             const qtdInscricoes = m._count?.inscricoes || 0;
 
             const podeEditar = m.monitorId === idUsuario || perfilUsuario === "ADMIN";
+            const podeExcluir = perfilUsuario === "ADMIN";
+
+            let acoesHtml = '';
+            if (podeEditar || podeExcluir) {
+                acoesHtml = `<div class="acoes-card">`;
+                if (podeEditar) {
+                    acoesHtml += `
+                    <button class="btn-editar-card" title="Editar monitoria">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>`;
+                }
+                if (podeExcluir) {
+                    acoesHtml += `
+                    <button class="btn-excluir-card" data-id="${m.id}" title="Excluir monitoria">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>`;
+                }
+                acoesHtml += `</div>`;
+            }
 
             li.innerHTML = `
-            ${podeEditar ? `
-            <button class="btn-editar-card" title="Editar monitoria">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-            </button>` : ''}
+            ${acoesHtml}
             <div class="informacoesmonitoria">
                 <div class="nomemonitoria">${m.nome_monitoria}</div>
                 <div class="disciplinamonitoria">${m.disciplina.nome}</div>
@@ -269,6 +295,20 @@ async function carregarMonitorias() {
                         selectDisciplina.value = m.disciplinaId;
 
                         modalOverlay.classList.add("open");
+                    });
+                }
+            }
+
+            // Ícone de lixeira no canto superior direito (apenas ADMIN)
+            if (podeExcluir) {
+                const btnExcluirCard = li.querySelector(".btn-excluir-card");
+                if (btnExcluirCard) {
+                    btnExcluirCard.addEventListener("click", (e) => {
+                        e.stopPropagation();
+
+                        monitoriaParaExcluir = m.id;
+                        mensagemConfirmarExclusao.textContent = `Deseja realmente excluir a monitoria "${m.nome_monitoria}"?`;
+                        popupExcluirMonitoria.classList.remove("hidden");
                     });
                 }
             }
@@ -521,11 +561,38 @@ popupLocal.textContent = `Local: ${m.local?.nome || 'Não informado'}${campusNom
 
 function filtrarPorStatus(status) {
     const cards = document.querySelectorAll(".cardmonitoria");
+    let visiveis = 0;
+
     cards.forEach(card => {
         const cardStatus = card.dataset.status;
         const deveMostrar = status === "todas" || cardStatus === status;
         card.style.display = deveMostrar ? "" : "none";
+        if (deveMostrar) visiveis++;
     });
+
+    // Limpa timeout anterior e remove mensagem anterior se existir
+    if (timeoutMensagemVazia) {
+        clearTimeout(timeoutMensagemVazia);
+        timeoutMensagemVazia = null;
+    }
+
+    const mensagemAnterior = lista.querySelector(".mensagem-lista-vazia");
+    if (mensagemAnterior) {
+        mensagemAnterior.remove();
+    }
+
+    // Exibe mensagem com delay para evitar piscar durante a transicao das abas
+    if (cards.length > 0 && visiveis === 0) {
+        timeoutMensagemVazia = setTimeout(() => {
+            const li = document.createElement("li");
+            li.classList.add("mensagem-lista-vazia");
+            li.innerHTML = `
+                <img src="../assets/img/monitoramento.png" alt="Nenhuma monitoria">
+                <span>Nenhuma monitoria marcada</span>
+            `;
+            lista.appendChild(li);
+        }, 300);
+    }
 }
 
 const tabsStatus = document.getElementById("tabsStatus");
@@ -729,6 +796,48 @@ const ordenarMonitorias = document.getElementById("ordenarMonitorias");
 if (ordenarMonitorias) {
     ordenarMonitorias.addEventListener("change", () => {
         carregarMonitorias();
+    });
+}
+
+// Popup de confirmacao de exclusao de monitoria
+if (btnFecharPopupExclusao) {
+    btnFecharPopupExclusao.addEventListener("click", () => {
+        popupExcluirMonitoria.classList.add("hidden");
+        monitoriaParaExcluir = null;
+    });
+}
+
+if (popupExcluirMonitoria) {
+    popupExcluirMonitoria.addEventListener("click", (e) => {
+        if (e.target === popupExcluirMonitoria) {
+            popupExcluirMonitoria.classList.add("hidden");
+            monitoriaParaExcluir = null;
+        }
+    });
+}
+
+if (btnConfirmarExclusao) {
+    btnConfirmarExclusao.addEventListener("click", async () => {
+        if (!monitoriaParaExcluir) return;
+
+        try {
+            const response = await fetch(`/monitorias/${monitoriaParaExcluir}`, {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                const erro = await response.json().catch(() => ({}));
+                throw new Error(erro.message || "Erro ao excluir monitoria");
+            }
+
+            popupExcluirMonitoria.classList.add("hidden");
+            monitoriaParaExcluir = null;
+            carregarMonitorias();
+        } catch (err) {
+            alert(err.message);
+        }
     });
 }
 

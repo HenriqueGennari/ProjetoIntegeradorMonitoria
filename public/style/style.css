@@ -1437,10 +1437,17 @@ textarea[name="ata"]:disabled {
 }
 
 /* Icone de editar no canto superior direito do card */
-.btn-editar-card {
+.acoes-card {
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+}
+
+.btn-editar-card,
+.btn-excluir-card {
     width: 26px;
     height: 26px;
     border: none;
@@ -1452,13 +1459,23 @@ textarea[name="ata"]:disabled {
     justify-content: center;
     color: #09696f;
     transition: all 0.2s ease;
-    z-index: 2;
 }
 
 .btn-editar-card:hover {
     background: #0b8e98;
     color: #fff;
     transform: scale(1.1);
+}
+
+.btn-excluir-card:hover {
+    background: #dc2626;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Empurra o conteudo do card para baixo quando ha botoes de acao */
+.acoes-card + .informacoesmonitoria {
+    margin-top: 30px;
 }
 
 /* Botao lista de presenca */
@@ -1475,6 +1492,49 @@ textarea[name="ata"]:disabled {
 
 .btn-lista-presenca:hover {
     background: #0b8e98;
+}
+
+/* Mensagem de lista vazia */
+.mensagem-lista-vazia {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 300px;
+    text-align: center;
+    padding: 40px 20px;
+    color: #555;
+    font-size: 1rem;
+    list-style: none;
+    opacity: 0;
+    animation: fadeInMensagem 0.3s ease 0.15s forwards;
+}
+
+@keyframes fadeInMensagem {
+    to {
+        opacity: 1;
+    }
+}
+
+.mensagem-lista-vazia img {
+    width: 80px;
+    height: 80px;
+    opacity: 0.7;
+}
+
+.mensagem-lista-vazia span {
+    display: block;
+}
+
+/* Variante para a home */
+.mensagem-home-vazia {
+    grid-column: auto;
+    min-height: 200px;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -65,7 +65,12 @@ function renderizarInscricoes(inscricoes) {
     listaInscricoes.innerHTML = "";
 
     if (!inscricoes || inscricoes.length === 0) {
-        listaInscricoes.innerHTML = `<div class="sem-inscricoes">Nenhuma monitoria encontrada.</div>`;
+        listaInscricoes.innerHTML = `
+            <div class="sem-inscricoes">
+                <img src="../assets/img/monitoramento.png" alt="Nenhuma monitoria">
+                <span>Nenhuma monitoria encontrada.</span>
+            </div>
+        `;
         return;
     }
 

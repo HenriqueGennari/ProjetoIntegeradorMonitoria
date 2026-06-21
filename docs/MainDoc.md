@@ -77,6 +77,7 @@ Rotas da aplicacao responsaveis, respectivamente, por suas finalidades cruciais 
 - "home": http://localhost:3000/home/
 - "logout": http://localhost:3000/logout/
 - "dashboard-admin": http://localhost:3000/dashboard-admin
+- "dashboard-usuarios": http://localhost:3000/dashboard-usuarios
 - "gerenciar-monitorias": http://localhost:3000/gerenciar-monitorias
 
 

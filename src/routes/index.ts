@@ -30,6 +30,15 @@ router.get("/dashboard-admin", autenticadoCookie, (req: any, res: Response, next
   res.sendFile("dashboardAdmin.html", { root: "public/pages" });
 });
 
+router.get("/dashboard-usuarios", autenticadoCookie, (req: any, res: Response, next: any) => {
+  if (req.user?.perfil !== "ADMIN") {
+    return res.redirect("/pages/naoAutorizado.html");
+  }
+  next();
+}, (_req: Request, res: Response) => {
+  res.sendFile("dashboardUsuarios.html", { root: "public/pages" });
+});
+
 router.get("/dashboard-locais", autenticadoCookie, (req: any, res: Response, next: any) => {
   if (req.user?.perfil !== "ADMIN") {
     return res.redirect("/pages/naoAutorizado.html");

@@ -5,6 +5,7 @@ import { getAuthHeaders } from "../utils/getAuthHeaders.js";
 let todasMonitorias = [];
 let campusList = [];
 let indicadorTab = null;
+let timeoutMensagemVaziaHome = null;
 
 function posicionarIndicador(tab, animar = true) {
     if (!indicadorTab || !tab) return;
@@ -84,6 +85,38 @@ function filtrarPorCampus(campusNome) {
         const visibleCards = container.querySelectorAll(".cardmonitoria:not(.tab-hidden)");
         container.style.display = visibleCards.length > 0 ? "" : "none";
     });
+
+    atualizarMensagemVaziaHome();
+}
+
+function atualizarMensagemVaziaHome() {
+    const lista = document.getElementById("listamonitorias");
+    if (!lista) return;
+
+    if (timeoutMensagemVaziaHome) {
+        clearTimeout(timeoutMensagemVaziaHome);
+        timeoutMensagemVaziaHome = null;
+    }
+
+    const mensagemAnterior = lista.querySelector(".mensagem-home-vazia");
+    if (mensagemAnterior) {
+        mensagemAnterior.remove();
+    }
+
+    const cardsVisiveis = lista.querySelectorAll(".cardmonitoria:not(.tab-hidden)");
+    const algumVisivel = Array.from(cardsVisiveis).some(card => card.style.display !== "none");
+
+    if (!algumVisivel) {
+        timeoutMensagemVaziaHome = setTimeout(() => {
+            const li = document.createElement("li");
+            li.classList.add("mensagem-lista-vazia", "mensagem-home-vazia");
+            li.innerHTML = `
+                <img src="../assets/img/monitoramento2.png" alt="Nenhuma monitoria">
+                <span>Nenhuma monitoria encontrada</span>
+            `;
+            lista.appendChild(li);
+        }, 300);
+    }
 }
 
 async function carregarMonitorias() {
@@ -117,7 +150,12 @@ async function carregarMonitorias() {
         const inscricoes = await respInscricao.json();
 
         if (monitorias.length === 0) {
-            lista.innerHTML = "Nenhuma monitoria encontrada!";
+            lista.innerHTML = `
+                <li class="mensagem-lista-vazia mensagem-home-vazia">
+                    <img src="../assets/img/monitoramento2.png" alt="Nenhuma monitoria">
+                    <span>Nenhuma monitoria encontrada</span>
+                </li>
+            `;
             return;
         }
 
@@ -426,6 +464,8 @@ async function carregarMonitorias() {
                     .some(card => card.style.display !== "none" && !card.classList.contains("tab-hidden"));
                 container.style.display = hasVisible ? "" : "none";
             });
+
+            atualizarMensagemVaziaHome();
         };
 
         buscarMonitoria.addEventListener("input", filtrar);
