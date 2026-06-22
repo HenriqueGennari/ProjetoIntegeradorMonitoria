@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import AlunosService from "../../services/Aluno/AlunoService.js";
 import AlunoPrismaRepository from "../../repositories/Prisma/AlunoPrismaRepository.js";
 import { AuthRequest } from "../../middlewares/autenticadoMiddleware.js";
+import jwt, { SignOptions } from "jsonwebtoken";
 
 const alunoService = new AlunosService(new AlunoPrismaRepository());
 
@@ -36,7 +37,20 @@ class AlunoController{
     async create(Req : Request, Res : Response){
         try {
             const dados = Req.body;
-            const dadosAlunos = await alunoService.create(dados)
+
+            let adminId : string | undefined;
+            const auth = Req.headers.authorization
+            const token = auth?.split(" ")[1]
+
+            if (token && process.env.JWT_SECRET){
+                const decoded = jwt.verify(token, process.env.JWT_SECRET) as any
+                console.log(decoded)
+                if(decoded.perfil === "ADMIN"){
+                    adminId = decoded.id
+                }
+            }
+            
+            const dadosAlunos = await alunoService.create(dados, adminId)
 
             return Res.status(200).json(dadosAlunos);
             
@@ -62,12 +76,13 @@ class AlunoController{
         try {
             const { id } = Req.params;
             const dados = { ...Req.body };
+            const user = (Req as AuthRequest).user;
 
             if (dados.perfilId !== undefined) {
                 dados.perfilId = parseInt(dados.perfilId, 10);
             }
 
-            const alunoDados = await alunoService.updateUsuarioByAdmin(id, dados);
+            const alunoDados = await alunoService.updateUsuarioByAdmin(id, dados, user!.id);
 
             return Res.status(200).json(alunoDados);
         } catch (err : any) {

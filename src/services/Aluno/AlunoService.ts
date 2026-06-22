@@ -6,28 +6,36 @@ import { getPepper } from "../../utils/security/pepper.js";
 import { allowedNodeEnvironmentFlags } from "process";
 
 
-class AlunosService{
+class AlunosService {
 
     // constructor(private _alunoRespository : AlunoRepository){}
-    constructor(private _alunoPrismaRepository: AlunoPrismaRepository){}
+    constructor(private _alunoPrismaRepository: AlunoPrismaRepository) { }
 
-    async getAll(perfilNome?: string, skip?: number, take?: number) : Promise<Aluno[]>{
+    async getAll(perfilNome?: string, skip?: number, take?: number): Promise<Aluno[]> {
         const alunosDados = await this._alunoPrismaRepository.getAll(perfilNome, skip, take)
         return alunosDados;
     }
+    async getById(id: string): Promise<Aluno> {
+        const alunoDados = await this._alunoPrismaRepository.getById(id)
+        
+        if (!alunoDados) {
+            throw new Error("ALUNO_INEXISTENTE")
+        }
+        return alunoDados;
+    }
     
-    async create(dados : Aluno) : Promise<Aluno>{
+    async create(dados : Aluno, adminId ? : string) : Promise < Aluno > {
 
         const matriculaString = String(dados.matricula)
-        
+
         const alunoExistente = await this._alunoPrismaRepository.findByEmailAndMatricula(dados.email, matriculaString);
 
-        if (alunoExistente) {
+        if(alunoExistente) {
             if (alunoExistente.email === dados.email) {
-                throw new Error ("EMAIL_EXISTE")
+                throw new Error("EMAIL_EXISTE")
             }
             if (alunoExistente.matricula === dados.matricula) {
-                throw new Error ("MATRICULA_EXISTE")
+                throw new Error("MATRICULA_EXISTE")
             }
         }
 
@@ -35,60 +43,63 @@ class AlunosService{
 
         const dadosComSenhaHash = {
             ...dados,
-            senha : senhaHash
+            senha: senhaHash
         };
 
         const dadosAlunos = await this._alunoPrismaRepository.create(dadosComSenhaHash)
+
+        eventEmmiter.emit("Aluno:Criado", {
+            usuarioId: adminId || dadosAlunos.id,
+            acao: adminId ? "CRIAR_ALUNO_PELO_ADMIN" : "CRIAR_ALUNO",
+            entidade: "Aluno",
+            entidadeId: dadosAlunos.id,
+            aluno: {
+                nome: dadosAlunos.nome,
+                email: dadosAlunos.email,
+                matricula: dadosAlunos.matricula,
+            },
+        });
+
         return dadosAlunos;
     }
-    async getById(id : string) : Promise <Aluno>{
-        const alunoDados = await this._alunoPrismaRepository.getById(id)
-
-        if (!alunoDados){
-            throw new Error ("ALUNO_INEXISTENTE")
-        }
-        return alunoDados;
-    }
-
-    
-    async update(id : string, dados : Aluno) : Promise <Aluno>{
+    async update(id: string, dados: Aluno): Promise<Aluno> {
 
         const alunoAntes = await this._alunoPrismaRepository.getById(id);
 
-        if (!alunoAntes){
-            throw new Error ("ALUNO_INEXISTENTE")
+        if (!alunoAntes) {
+            throw new Error("ALUNO_INEXISTENTE")
         }
 
         if (dados.nome !== undefined && dados.nome.trim() === "") {
-            throw new Error ("NOME_OBRIGATORIO")
+            throw new Error("NOME_OBRIGATORIO")
         }
 
         if (dados.email !== undefined && dados.email.trim() === "") {
-            throw new Error ("EMAIL_OBRIGATORIO")
+            throw new Error("EMAIL_OBRIGATORIO")
         }
 
         if (dados.matricula !== undefined && dados.matricula.length < 8) {
-            throw new Error ("MATRICULA_INVALIDA")
+            throw new Error("MATRICULA_INVALIDA")
         }
 
-        if (dados.matricula || dados.email){
+        if (dados.matricula || dados.email) {
             const alunoExistente = await this._alunoPrismaRepository.findByEmailAndMatricula(dados.email || "", dados.matricula || "")
 
-            if (alunoExistente && alunoExistente.id !== id){
-                throw new Error ("MATRICULA_OU_EMAIL_EM_USO")
+            if (alunoExistente && alunoExistente.id !== id) {
+                throw new Error("MATRICULA_OU_EMAIL_EM_USO")
             }
         }
 
         const alunoDados = await this._alunoPrismaRepository.update(id, dados)
 
-        if (!alunoDados){
-            throw new Error ("ALUNO_INEXISTENTE")
+        if (!alunoDados) {
+            throw new Error("ALUNO_INEXISTENTE")
         }
 
         // auditoria
         const camposParaComparar = ["nome", "email", "matricula"] as const;
         const alteracoes = [];
-        
+
         for (const campo of camposParaComparar) {
             const valorAntes = alunoAntes[campo]; //houston, por exemplo. Se não vier uma alteração, viria: houston -> valor não alterado
             const valorDepois = alunoDados[campo]; // houston1, por exemplo. Se não vier uma alteração, viria: houston -> valor também não foi alterado mesmo após update
@@ -106,11 +117,11 @@ class AlunosService{
 
         if (alteracoes.length > 0) {
             eventEmmiter.emit("Aluno:Atualizado", {
-                usuarioId : id,
-                acao : "ATUALIZAÇÃO PELO USUÁRIO",
-                entidade : "Aluno",
-                entidadeId : id,
-                detalhes : {
+                usuarioId: id,
+                acao: "ATUALIZAÇÃO_PELO_USUÁRIO",
+                entidade: "Aluno",
+                entidadeId: id,
+                detalhes: {
                     alteracoes
                 }
             })
@@ -119,15 +130,15 @@ class AlunosService{
         return alunoDados;
     }
 
-    async updateUsuarioByAdmin(id: string, dados: any): Promise<Aluno> {
-        const alunoExistente = await this._alunoPrismaRepository.getById(id);
-        
-        if (!alunoExistente) {
+    async updateUsuarioByAdmin(id: string, dados: any, usuarioId: string): Promise<Aluno> {
+        const alunoAntes = await this._alunoPrismaRepository.getById(id);
+
+        if (!alunoAntes) {
             throw new Error("ALUNO_INEXISTENTE");
         }
-        
+
         const dadosAtualizados: any = {};
-        
+
         if (dados.perfilId !== undefined) {
             dadosAtualizados.perfilId = dados.perfilId;
         }
@@ -163,7 +174,7 @@ class AlunosService{
         }
 
         if (dadosAtualizados.email || dadosAtualizados.matricula) {
-            const alunoDuplicado = await this._alunoPrismaRepository.findByEmailAndMatricula( dadosAtualizados.email || "", dadosAtualizados.matricula || "");
+            const alunoDuplicado = await this._alunoPrismaRepository.findByEmailAndMatricula(dadosAtualizados.email || "", dadosAtualizados.matricula || "");
 
             if (alunoDuplicado && alunoDuplicado.id !== id) {
                 if (alunoDuplicado.email === dadosAtualizados.email) {
@@ -182,6 +193,43 @@ class AlunosService{
             throw new Error("ERRO_AO_ATUALIZAR_PERFIL");
         }
 
+        // auditoria
+        const camposParaComparar = ["nome", "email", "matricula", "perfilId"] as const;
+        const alteracoes = [];
+
+        for (const campo of camposParaComparar) {
+            const valorAntes = alunoAntes[campo];
+            const valorDepois = alunoAtualizado[campo];
+
+            if (valorAntes !== valorDepois) {
+                alteracoes.push({
+                    campo,
+                    antes: valorAntes,
+                    depois: valorDepois
+                });
+            }
+        }
+
+        if (dados.senha !== undefined && dados.senha.trim() !== "") {
+            alteracoes.push({
+                campo: "senha",
+                antes: "********",
+                depois: "SENHA_ALTERADA"
+            });
+        }
+
+        if (alteracoes.length > 0) {
+            eventEmmiter.emit("Aluno:Atualizado", {
+                usuarioId,
+                acao: "ATUALIZAÇÃO_PELO_ADMIN",
+                entidade: "Aluno",
+                entidadeId: id,
+                detalhes: {
+                    alteracoes
+                }
+            });
+        }
+
         return alunoAtualizado;
     }
     async updateSenha(id: string, senha: string, usuarioId: string): Promise<Aluno> {
@@ -190,13 +238,13 @@ class AlunosService{
         if (!alunoExistente) {
             throw new Error("ALUNO_INEXISTENTE");
         }
-        
+
         if (id !== usuarioId) {
             throw new Error("NAO_AUTORIZADO");
-        } 
+        }
 
         if (senha.trim() === "") {
-            throw new Error("SENHA_OBRIGATORIA"); 
+            throw new Error("SENHA_OBRIGATORIA");
         }
 
         const adminHouston = alunoExistente.email === "houston@sempreceub.com";
@@ -223,17 +271,27 @@ class AlunosService{
         return alunoAtualizado;
     }
 
-    async delete(id : string, usuarioId : string) : Promise <Aluno>{
-        
+    async delete(id: string, usuarioId: string): Promise<Aluno> {
+
         if (id === usuarioId) {
-            throw new Error ("AUTO_EXCLUSAO_NAO_PERMITIDA")
+            throw new Error("AUTO_EXCLUSAO_NAO_PERMITIDA")
         }
 
         const alunoDados = await this._alunoPrismaRepository.delete(id)
 
-        if (!alunoDados){
-            throw new Error ("ALUNO_INEXISTENTE")
+        if (!alunoDados) {
+            throw new Error("ALUNO_INEXISTENTE")
         }
+
+        eventEmmiter.emit("Aluno:Deletado", {
+            usuarioId,
+            alunoId: alunoDados.id,
+            aluno: {
+                nome: alunoDados.nome,
+                email: alunoDados.email,
+                matricula: alunoDados.matricula,
+            },
+        });
 
         return alunoDados;
     }

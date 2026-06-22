@@ -3,6 +3,7 @@ import { eventEmmiter } from "../events/Evento.js";
 
 const auditoriaRepository = new AuditoriaPrismaRepository();
 
+//monitoria
 eventEmmiter.on("Monitoria:Criada", async (payload) => {
     try {
         const dadosAuditoria = {
@@ -55,6 +56,26 @@ eventEmmiter.on("Monitoria:Deletada", async (payload) => {
     }
 
     console.log("[Auditoria] Evento Monitoria:Deletada recebido");
+});
+
+//aluno
+
+eventEmmiter.on("Aluno:Criado", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: payload.acao,
+            entidade: payload.entidade,
+            entidadeId: payload.entidadeId,
+            detalhes: payload.aluno
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Aluno:Criado recebido");
 });
 
 eventEmmiter.on("Aluno:Login", async (payload) => {
@@ -110,6 +131,26 @@ eventEmmiter.on("Aluno:Senha", async (payload) => {
 
     console.log("[Auditoria] Evento Aluno:SenhaAtualizada recebido");
 });
+
+eventEmmiter.on("Aluno:Deletado", async (payload) => {
+    try {
+        const dadosAuditoria = {
+            usuarioId: payload.usuarioId,
+            acao: "DELETAR_ALUNO",
+            entidade: "Aluno",
+            entidadeId: payload.alunoId,
+            detalhes: payload.aluno
+        };
+
+        await auditoriaRepository.createAuditoria(dadosAuditoria);
+    } catch (err: any) {
+        console.log(err.message);
+    }
+
+    console.log("[Auditoria] Evento Aluno:Deletado recebido");
+});
+
+//inscriçoes
 
 eventEmmiter.on("Inscricao:Criada", async (payload) => {
     try {

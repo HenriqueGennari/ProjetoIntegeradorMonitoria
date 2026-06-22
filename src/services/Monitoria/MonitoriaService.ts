@@ -283,7 +283,7 @@ class MonitoriaService {
     if (alteracoes.length > 0) {
       eventEmmiter.emit("Monitoria:Atualizada", {
         usuarioId,
-        acao: "ATUALIZAÇÃO",
+        acao: "MONITORIA_ATUALIZADA",
         entidade: "Monitoria",
         entidadeId: id,
         detalhes: {

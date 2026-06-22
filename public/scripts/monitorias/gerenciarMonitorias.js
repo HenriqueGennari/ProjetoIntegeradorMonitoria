@@ -202,7 +202,7 @@ async function carregarMonitorias() {
             const qtdInscricoes = m._count?.inscricoes || 0;
 
             const podeEditar = m.monitorId === idUsuario || perfilUsuario === "ADMIN";
-            const podeExcluir = perfilUsuario === "ADMIN";
+            const podeExcluir = podeEditar;
 
             let acoesHtml = '';
             if (podeEditar || podeExcluir) {
