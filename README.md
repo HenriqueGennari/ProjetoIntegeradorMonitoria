@@ -22,7 +22,7 @@ A **Houston Education** surge para centralizar este ecossistema:
 
 Para informações detalhadas sobre a arquitetura, regras de negócio e o histórico de evolução do projeto, acesse a pasta `/docs`:
 
-- **[Documentação Principal](./docs/MainDoc.md):** Contém o detalhamento completo do sistema, diagramas e especificações técnicas.
+- **[Documentação Principal](./docs/SRS-HoustonEducation.md):** Documento padronizado com a IEE 830 que contempla toda a documentação da aplicação.
 - **[Changelog (Versionamento)](./docs/CHANGELOG.md):** Registro cronológico de todas as atualizações e versões, além de correções e novas funcionalidades implementadas.
 
 ---
@@ -38,11 +38,12 @@ Para informações detalhadas sobre a arquitetura, regras de negócio e o histó
 
 | Recurso | Descrição |
 | :--- | :--- |
-| **Autenticação Segura** | Login diferenciado para Alunos e Monitores. |
-| **Dashboard de Monitorias** | Visualização de disciplinas, datas e horários disponíveis. |
+| **Autenticação Segura** | Cadastro e Login|
+| **Monitorias** | Visualização de monitorias passíveis de inscrição e  controle e gerenciamento pelos monitores. |
 | **Inscrição Simplicada** | Fluxo rápido para o aluno garantir a sua vaga. |
 | **Gestão de Perfil** | Controle de informações pessoais e histórico de participações. |
-| **Painel do Monitor** | Área exclusiva para criação, edição e gestão de monitorias. |
+| **Painel do admin** | Área exclusiva para o admin da aplicação, sendo possível adicionar, editar e deletar registros de todas as entidades da aplicação, além da visualização da auditoria completa do sistema. |
+
 
 ---
 
@@ -91,13 +92,15 @@ Para rodar localmente, siga as instruções na seção [Como Executar o Projeto]
     npm install
     ```
 3.  **Configure o Banco de Dados:**
-    Certifique-se de que o seu PostgreSQL está ativo e configure a `DATABASE_URL` no arquivo `prisma.config.ts` ou `.env`.
-4.  **Rode as migrações e o Seed (Dados Iniciais):**
+    Certifique-se de que uma instância do CockroachDB está ativa e configure a `DATABASE_URL` no arquivo `.env`.
+4.  **Configure o env:**
+    Certifique-se de fazer uma cópia do `.env.example` e preencha todas as variáveis.
+5.  **Rode as migrações e o Seed (Dados Iniciais):**
     ```bash
     npx prisma migrate dev
     npx prisma db seed
     ```
-5.  **Inicie o servidor:**
+6.  **Inicie o servidor:**
     ```bash
     npm run dev
     ```
