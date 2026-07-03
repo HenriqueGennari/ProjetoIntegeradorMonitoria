@@ -91,16 +91,32 @@ Para rodar localmente, siga as instruções na seção [Como Executar o Projeto]
     ```bash
     npm install
     ```
-3.  **Configure o Banco de Dados:**
-    Certifique-se de que uma instância do CockroachDB está ativa e configure a `DATABASE_URL` no arquivo `.env`.
-4.  **Configure o env:**
-    Certifique-se de fazer uma cópia do `.env.example` e preencha todas as variáveis.
-5.  **Rode as migrações e o Seed (Dados Iniciais):**
+3.  **Configure as variáveis de ambiente:**
+    Copie o arquivo de exemplo e preencha com os valores reais do seu ambiente:
+    ```bash
+    cp .env.example .env
+    ```
+4.  **Suba o CockroachDB via Docker:**
+    ```bash
+    docker run -d --name cockroach-local -p 26257:26257 -p 8080:8080 cockroachdb/cockroach:v25.4.10 start-single-node --insecure
+    ```
+5.  **Configure o cluster CockroachDB:**
+    ```bash
+    docker exec -it cockroach-local cockroach sql --insecure -e "SET CLUSTER SETTING sql.defaults.serial_normalization = 'sql_sequence';"
+    ```
+    > **💡 Por que esse comando?**  
+    > Como migramos do PostgreSQL para o CockroachDB, esse ajuste é necessário por conta das diferenças de tipos e do tratamento de campos/tabelas entre os dois bancos. 
+6.  **Crie o banco de dados:**
+    Substitua `houstoneducationlocal` pelo mesmo nome usado na `DATABASE_URL` do seu `.env`:
+    ```bash
+    docker exec -it cockroach-local cockroach sql --insecure -e "CREATE DATABASE IF NOT EXISTS houstoneducationlocal;"
+    ```
+7.  **Rode as migrações e o Seed (Dados Iniciais):**
     ```bash
     npx prisma migrate dev
     npx prisma db seed
     ```
-6.  **Inicie o servidor:**
+8.  **Inicie o servidor:**
     ```bash
     npm run dev
     ```

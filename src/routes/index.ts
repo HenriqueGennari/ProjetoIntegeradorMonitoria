@@ -1,4 +1,6 @@
 import { Response, Request } from "express";
+import fs from "fs";
+import path from "path";
 
 import { Router } from "express";
 import alunoRoutes from "./Aluno/alunoRoutes.js"
@@ -86,6 +88,12 @@ router.get("/gerenciar-monitorias", autenticadoCookie, (req: any, res: Response,
 
 router.get("/perfil", autenticadoCookie, (_req: Request, res: Response) => {
   res.sendFile("perfil.html", { root: "public/pages" });
+});
+
+router.get("/api/versao", (_req: Request, res: Response) => {
+  const packageJsonPath = path.join(process.cwd(), "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+  res.json({ versao: packageJson.version });
 });
 
 // rotas do backend

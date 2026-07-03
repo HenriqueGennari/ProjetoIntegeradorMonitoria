@@ -9,8 +9,10 @@
     <link rel="stylesheet" href="../style/style.css?v=9">
     <link rel="stylesheet" href="../style/stylePopUp.css?v=9">
     <link rel="stylesheet" href="../style/styleNavMenuLateral.css?v=9">
+    <link rel="stylesheet" href="../style/changelogModal.css?v=1">
     <script type="module" src="../scripts/menuLateral/menuLateral.js?v=2"></script>
     <script type="module" src="../scripts/menuLateral/ocultarAbasPorPerfil.js?v=2"></script>
+    <script type="module" src="../scripts/changelog/changelog.js?v=1"></script>
 
     <!--Isso é para o picker quando atualizar as monitorias-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -85,6 +87,13 @@
                     <a href="/dashboard-admin" id="linkDashboardAdmin.html">
                         <img src="../assets/img/iconeDashboardAdmin.png" alt="Icone Dashboard Admin">
                         <span>Dashboard Admin</span>
+                    </a>
+                </li>
+                <li class="item-changelog">
+                    <a href="#" id="linkChangelog" class="link-changelog">
+                        <i class="ph-bold ph-scroll" style="font-size: 24px;"></i>
+                        <span>Changelog</span>
+                        <span class="changelog-versao" id="changelogVersaoMenu">v--</span>
                     </a>
                 </li>
             </ul>

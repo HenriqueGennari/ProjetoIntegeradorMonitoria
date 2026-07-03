@@ -56,7 +56,7 @@ Exemplo de evolução de versão:
 ### Changed
 
 **Documentação**
-- Atualização do `README.md` na seção de "Como rodar o projeto". Foi adicionado os comandos necessários para subir a imagem do Cockroach através do Docker.
+- Atualização do `README.md`.
 
 **Interface e UX**
 - Reestilização do item de changelog no menu lateral com divisor e posicionamento fixo na parte inferior.

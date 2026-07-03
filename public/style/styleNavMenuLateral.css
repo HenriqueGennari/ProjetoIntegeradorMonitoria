@@ -113,12 +113,23 @@ nav {
 
 .menuConteudo {
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .menuConteudo ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.menuConteudo li.item-changelog {
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 
 .menuConteudo li {
@@ -305,11 +316,56 @@ nav {
 
 /* Deixa o botão de sair com destaque */
 .dropdown-conteudo a.texto-sair {
-    color: #e71111; 
+    color: #e71111;
     font-weight: bold;
 }
 
 .dropdown-conteudo a.texto-sair:hover {
     background-color: #850505;
     color: white;
+}
+
+/* =========================================
+   ITEM DO CHANGELOG NO MENU LATERAL
+   ========================================= */
+
+.menuConteudo li.item-changelog {
+    margin-top: auto;
+    margin-bottom: 20px;
+    padding: 16px 12px 0 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.menuConteudo li.item-changelog a {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.menuConteudo li.item-changelog a:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.menuConteudo li.item-changelog a i {
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.menuConteudo li.item-changelog a span {
+    color: #ffffff;
+}
+
+.changelog-versao {
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #a5f3fc;
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 3px 8px;
+    border-radius: 6px;
 }
