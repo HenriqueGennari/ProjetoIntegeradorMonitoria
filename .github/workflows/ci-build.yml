@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: postgresql://root@localhost:26257/monitoria_test?schema=public&sslmode=disable&options=-c%20create_table_with_schema_locked=off
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/monitoria_test?schema=public
       NODE_ENV: test
       JWT_SECRET: smoke-test-secret
-      ADMIN_PASSWORD: YWRtaW4xMjM= #precisei colocar pq o seed roda a criação do admin e sem a password e o pepper ele quebra
+      ADMIN_PASSWORD: YWRtaW4xMjM=
       ADMIN_PASSWORD_PEPPER: cGVwcGVy
 
     steps:
@@ -50,31 +50,23 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Iniciar CockroachDB
+      - name: Iniciar PostgreSQL
         run: |
-          docker run -d --name cockroach-ci -p 26257:26257 -p 8080:8080 cockroachdb/cockroach:v25.4.10 start-single-node --insecure --store=type=mem,size=0.25
+          docker run -d --name postgres-ci -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=monitoria_test postgres:16-alpine
           for i in {1..60}; do
-            if docker exec cockroach-ci cockroach sql --insecure -e "SELECT 1" > /dev/null 2>&1; then
-              echo "CockroachDB pronto!"
+            if docker exec postgres-ci pg_isready -U postgres > /dev/null 2>&1; then
+              echo "PostgreSQL pronto!"
               exit 0
             fi
-            echo "Aguardando CockroachDB ficar pronto... (tentativa $i/60)"
+            echo "Aguardando PostgreSQL ficar pronto... (tentativa $i/60)"
             sleep 2
           done
-          echo "CockroachDB não ficou pronto a tempo. Logs do container:"
-          docker logs cockroach-ci
+          echo "PostgreSQL não ficou pronto a tempo. Logs do container:"
+          docker logs postgres-ci
           exit 1
 
       - name: Build da aplicação
         run: npm run build
-
-      - name: Criar banco de dados no CockroachDB
-        run: |
-          docker exec cockroach-ci cockroach sql --insecure -e "CREATE DATABASE IF NOT EXISTS monitoria_test;"
-
-      - name: Configurar serial normalization do CockroachDB
-        run: |
-          docker exec cockroach-ci cockroach sql --insecure -e "SET CLUSTER SETTING sql.defaults.serial_normalization = 'sql_sequence';"
 
       - name: Aplicar migrations do Prisma
         run: npx prisma migrate deploy
